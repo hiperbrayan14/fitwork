@@ -282,11 +282,12 @@
 
         @media (max-width: 480px) {
             .container { width: min(var(--max), calc(100% - 22px)); }
+            .hero { grid-template-columns: 1fr; gap: 32px; padding: 48px 0 32px; min-height: auto; }
+            .hero-copy-block { order: 1; }
+            .hero-visual { order: 2; position: relative; height: auto; }
             .hero-actions .btn { width: 100%; }
-            .hero-visual { height: 310px; }
-            .hero-image.one { width: 59%; height: 255px; left: 0; }
-            .hero-image.two { width: 41%; height: 145px; right: 0; }
-            .hero-image.three { width: 41%; height: 138px; right: 0; bottom: 0; }
+            .hero-image { position: static !important; width: 100% !important; height: auto !important; margin-bottom: 16px; transform: none !important; }
+            .hero-image img { border-radius: 16px; display: block; width: 100%; height: auto; }
             .section { padding: 38px 0; }
             .section-heading { display: block; }
             .section-description { margin-top: 10px; }

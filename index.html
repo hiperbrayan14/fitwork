@@ -733,12 +733,13 @@
             document.body.classList.add('logged-in');
             const { data } = await supabaseClient
                 .from("usuario")
-                .select("nombre, puntos")
+                .select("nombre, puntos, rol (nombre)")
                 .eq("auth_id", user.id)
                 .maybeSingle();
 
             const nombre = data?.nombre || user.email || "Usuario";
             const puntos = data?.puntos ?? 0;
+            const isAdmin = data?.rol?.nombre === "Administrador";
 
             // Update hero greeting
             const heroTitle = document.getElementById("hero-title");
@@ -755,6 +756,18 @@
                     <a class="btn btn-primary" href="panel.html">Mi Panel</a>
                     <a class="btn btn-outline" href="desafios.html">Ver Desafíos</a>
                 `;
+            }
+
+            // Add admin links to side nav if user is admin
+            if (isAdmin) {
+                const sideNav = document.getElementById("side-nav");
+                if (sideNav) {
+                    const adminLinks = `
+                        <a href="aprobaciones.html">✅ Aprobaciones</a>
+                        <a href="ranking.html">🏆 Ranking Admin</a>
+                    `;
+                    sideNav.insertAdjacentHTML('beforeend', adminLinks);
+                }
             }
 
             const { data: rows } = await supabaseClient

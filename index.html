@@ -283,10 +283,10 @@
         @media (max-width: 480px) {
             .container { width: min(var(--max), calc(100% - 22px)); }
             .hero-actions .btn { width: 100%; }
-            .hero-visual { height: 310px; }
-            .hero-image.one { width: 59%; height: 255px; left: 0; }
-            .hero-image.two { width: 41%; height: 145px; right: 0; }
-            .hero-image.three { width: 41%; height: 138px; right: 0; bottom: 0; }
+            .hero-visual { position: relative; height: auto; }
+            .hero-image { position: static; width: 100%; height: auto; margin-bottom: 16px; transform: none !important; }
+            .hero-image img { border-radius: 16px; }
+            .hero-image.one, .hero-image.two, .hero-image.three { width: 100%; height: auto; left: auto; right: auto; bottom: auto; }
             .section { padding: 38px 0; }
             .section-heading { display: block; }
             .section-description { margin-top: 10px; }

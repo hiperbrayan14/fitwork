@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="./dist/styles.css">
+    <style>
+        body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .bg-gradient-to-br { background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .from-indigo-500 { --tw-gradient-from: #6366f1; }
+        .to-purple-600 { --tw-gradient-to: #8b5cf6; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .h-screen { min-height: 100vh; }
+        .bg-white { background-color: #ffffff; }
+        .p-8 { padding: 2rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .shadow-2xl { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); }
+        .w-96 { width: 24rem; max-width: 100%; }
+        .transform { transform: translateZ(0); }
+        .transition-all { transition: all 0.2s ease; }
+        .hover\:scale-105:hover { transform: scale(1.05); }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; font-weight: 800; }
+        .font-extrabold { font-weight: 800; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .text-center { text-align: center; }
+        .text-gray-800 { color: #1f2937; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .block { display: block; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .font-medium { font-weight: 500; }
+        .text-gray-700 { color: #374151; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .w-full { width: 100%; }
+        .p-3 { padding: 0.75rem; }
+        .border { border-width: 1px; border-style: solid; border-color: #d1d5db; }
+        .border-gray-300 { border-color: #d1d5db; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .focus\:ring-2:focus { box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5); }
+        .focus\:border-transparent:focus { border-color: transparent; }
+        .outline-none { outline: none; }
+        .bg-indigo-600 { background-color: #4f46e5; }
+        .hover\:bg-indigo-700:hover { background-color: #4338ca; }
+        .text-white { color: #ffffff; }
+        .font-bold { font-weight: 700; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+        .hover\:shadow-indigo-500\/50:hover { box-shadow: 0 10px 15px rgba(99, 102, 241, 0.5); }
+        .duration-300 { transition-duration: 300ms; }
+        .mt-2 { margin-top: 0.5rem; }
+        .text-indigo-600 { color: #2563eb; }
+        .hover\:text-indigo-800:hover { color: #312e81; }
+        .mt-4 { margin-top: 1rem; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center h-screen">
+
+<div class="bg-white p-8 rounded-2xl shadow-2xl w-96 transform transition-all hover:scale-105">
+    <h2 class="text-3xl font-extrabold mb-6 text-center text-gray-800">Crear Cuenta</h2>
+
+    <div class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+            <input id="nombre" type="text" placeholder="Tu nombre"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+            <input id="email" type="email" placeholder="correo@ejemplo.com"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+            <input id="password" type="password" placeholder="••••••••"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all">
+        </div>
+
+        <button onclick="register()"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 mt-2">
+            Registrarse
+        </button>
+
+        <div class="text-center mt-4">
+            <a href="login.html" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">¿Ya tienes cuenta? Inicia sesión</a>
+        </div>
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://snzstwwumoghvfoxfdea.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuenN0d3d1bW9naHZmb3hmZGVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczOTc5MTUsImV4cCI6MjA5Mjk3MzkxNX0.QGbC-WrM7guN0S-KhmQckaNXIQPru1dm227MDhryv4o";
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function register() {
+    const nombre = document.getElementById("nombre").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!nombre || !email || !password) {
+        Swal.fire("Atención", "Todos los campos son obligatorios", "warning");
+        return;
+    }
+
+    Swal.fire({
+        title: 'Registrando...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading()
+        }
+    });
+
+    try {
+        // 1. Crear en AUTH
+        const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        const user = data.user;
+
+        // 2. Obtener rol y estado por defecto
+        const { data: rol } = await supabaseClient
+            .from("rol")
+            .select("id")
+            .eq("nombre", "Empleado")
+            .single();
+
+        const { data: estado } = await supabaseClient
+            .from("estado")
+            .select("id")
+            .eq("nombre", "Activo")
+            .single();
+
+        // 3. Insertar en tu tabla usuario
+        const { error: errorInsert } = await supabaseClient
+            .from("usuario")
+            .insert([{
+                auth_id: user.id,
+                nombre: nombre,
+                email: email,
+                rol_id: rol.id,
+                estado_id: estado.id
+            }]);
+
+        if (errorInsert) throw errorInsert;
+
+        Swal.fire({
+            title: "¡Éxito!",
+            text: "Usuario registrado correctamente. Ahora puedes iniciar sesión.",
+            icon: "success"
+        }).then(() => {
+            window.location.href = "login.html";
+        });
+
+    } catch (error) {
+        Swal.fire("Error", error.message, "error");
+    }
+}
+</script>
+
+</body>
+</html>

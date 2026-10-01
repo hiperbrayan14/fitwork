@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuarios</title>
+    <link rel="stylesheet" href="./dist/styles.css">
+    <style>
+        body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .p-6 { padding: 1.5rem; }
+        .font-sans { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .max-w-6xl { max-width: 72rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .mb-8 { margin-bottom: 2rem; }
+        .bg-white { background-color: #ffffff; }
+        .rounded-2xl { border-radius: 1rem; }
+        .shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+        .border-l-8 { border-left-width: 8px; }
+        .border-indigo-600 { border-color: #2563eb; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; font-weight: 800; }
+        .font-extrabold { font-weight: 800; }
+        .text-gray-800 { color: #1f2937; }
+        .tracking-tight { letter-spacing: -0.025em; }
+        .text-indigo-600 { color: #2563eb; }
+        .font-semibold { font-weight: 600; }
+        .mt-1 { margin-top: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .w-2 { width: 0.5rem; }
+        .h-2 { height: 0.5rem; }
+        .rounded-full { border-radius: 9999px; }
+        .bg-red-50 { background-color: #fef2f2; }
+        .hover\:bg-red-500:hover { background-color: #ef4444; }
+        .text-red-600 { color: #dc2626; }
+        .border { border-width: 1px; border-style: solid; }
+        .border-red-200 { border-color: #fecaca; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .transition-all { transition: all 0.2s ease; }
+        .duration-300 { transition-duration: 300ms; }
+        .group:hover .group-hover\:translate-x-1 { transform: translateX(0.25rem); }
+        .h-5 { height: 1.25rem; }
+        .w-5 { width: 1.25rem; }
+        .transform { transform: translateZ(0); }
+        .grid { display: grid; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .gap-8 { gap: 2rem; }
+        .lg\:col-span-1 { grid-column: span 1 / span 1; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+        .relative { position: relative; }
+        .group-focus-within\:text-indigo-500:focus-within { color: #2563eb; }
+        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .overflow-hidden { overflow: hidden; }
+        .overflow-x-auto { overflow-x: auto; }
+        .border-collapse { border-collapse: collapse; }
+        .w-full { width: 100%; }
+        .text-left { text-align: left; }
+        .text-gray-500 { color: #6b7280; }
+        .uppercase { text-transform: uppercase; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .text-right { text-align: right; }
+        .divide-y > * + * { border-top-width: 1px; border-top-style: solid; }
+        .divide-gray-50 { border-color: #f9fafb; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .border-gray-100 { border-color: #f3f4f6; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .focus\:ring-2:focus { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25); }
+        .focus\:bg-white:focus { background-color: #ffffff; }
+        .outline-none { outline: none; }
+        .appearance-none { appearance: none; }
+        .cursor-pointer { cursor: pointer; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-900 { color: #111827; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+        .shadow-indigo-200 { box-shadow: 0 20px 25px -5px rgba(167, 139, 250, 0.2), 0 8px 10px -6px rgba(167, 139, 250, 0.1); }
+        .hover\:shadow-indigo-300:hover { box-shadow: 0 20px 25px -5px rgba(192, 132, 252, 0.3), 0 8px 10px -6px rgba(192, 132, 252, 0.2); }
+        .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .gap-4 { gap: 1rem; }
+        .text-[10px] { font-size: 10px; line-height: 1.2; }
+        .mb-1\.5 { margin-bottom: 0.375rem; }
+        .ml-1 { margin-left: 0.25rem; }
+        .pl-14 { padding-left: 3.5rem; }
+        .pr-6 { padding-right: 1.5rem; }
+        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+        .border-none { border: none; }
+        .text-gray-300 { color: #d1d5db; }
+        .shadow-indigo-300 { box-shadow: 0 20px 25px -5px rgba(192, 132, 252, 0.3), 0 8px 10px -6px rgba(192, 132, 252, 0.2); }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 p-6 font-sans" style="margin:0; padding:1.5rem; background:#f3f4f6; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+<div class="max-w-6xl mx-auto" style="max-width:72rem; margin-left:auto; margin-right:auto;">
+
+    <!-- Header / Nav -->
+    <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border-l-8 border-indigo-600">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Gestión de Usuarios</h1>
+            <p id="user-greeting" class="text-indigo-600 font-semibold mt-1 flex items-center gap-2">
+                <span class="animate-pulse w-2 h-2 bg-indigo-600 rounded-full"></span>
+                Cargando perfil...
+            </p>
+        </div>
+        <button onclick="logout()"
+            class="bg-red-50 hover:bg-red-500 text-red-600 hover:text-white border border-red-200 px-6 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-sm flex items-center gap-2 group">
+            <span>Cerrar sesión</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Column: Form -->
+        <div class="lg:col-span-1">
+            <form id="form" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    Registro / Edición
+                </h3>
+                
+                <input type="hidden" id="id">
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Nombre Completo</label>
+                        <input id="nombre" type="text" placeholder="Ej. Juan Pérez" 
+                            class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Correo Electrónico</label>
+                        <input id="email" type="email" placeholder="juan@ejemplo.com" 
+                            class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Contraseña</label>
+                        <input id="password" type="password" placeholder="Mín. 6 caracteres" 
+                            class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all">
+                        <p class="text-[10px] text-gray-400 mt-1 ml-1">* Solo necesaria para nuevos registros</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Rol</label>
+                            <select id="rol" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all appearance-none cursor-pointer">
+                                <option>Cargando...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Estado</label>
+                            <select id="estado" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all appearance-none cursor-pointer">
+                                <option>Cargando...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transform active:scale-[0.98] transition-all mt-4">
+                        Guardar Usuario
+                    </button>
+                    
+                    <button type="button" onclick="limpiarForm()" id="btn-cancelar" class="hidden w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition-all">
+                        Cancelar Edición
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Column: Table -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Search Bar -->
+            <div class="relative group">
+                <input id="search" onkeyup="filtrar()" 
+                    placeholder="Buscar por nombre o email..." 
+                    class="w-full pl-14 pr-6 py-5 bg-white border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 absolute left-5 top-5 text-gray-300 group-focus-within:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            <!-- Table Container -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50/50 border-b border-gray-100">
+                                <th class="p-5 font-bold text-gray-500 uppercase text-xs tracking-widest">Usuario</th>
+                                <th class="p-5 font-bold text-gray-500 uppercase text-xs tracking-widest text-center">Rol</th>
+                                <th class="p-5 font-bold text-gray-500 uppercase text-xs tracking-widest text-center">Estado</th>
+                                <th class="p-5 font-bold text-gray-500 uppercase text-xs tracking-widest text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla" class="divide-y divide-gray-50">
+                            <!-- Rows loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// CONFIGURACIÓN SUPABASE
+const SUPABASE_URL = "https://snzstwwumoghvfoxfdea.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuenN0d3d1bW9naHZmb3hmZGVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczOTc5MTUsImV4cCI6MjA5Mjk3MzkxNX0.QGbC-WrM7guN0S-KhmQckaNXIQPru1dm227MDhryv4o";
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let cache = [];
+
+// VERIFICAR AUTH Y CARGAR GREETING
+async function checkAuth() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Buscamos el nombre en la tabla 'usuario' vinculada por 'auth_id'
+    const { data: profile } = await supabaseClient
+        .from("usuario")
+        .select("nombre")
+        .eq("auth_id", user.id)
+        .single();
+
+    if (profile) {
+        document.getElementById("user-greeting").innerHTML = `
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            Hola, <span class="text-gray-900 font-bold text-lg">${profile.nombre}</span>
+        `;
+    } else {
+        document.getElementById("user-greeting").innerText = `Conectado como: ${user.email}`;
+    }
+}
+
+// CERRAR SESIÓN
+async function logout() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+}
+
+// CARGAR ROLES
+async function getRoles() {
+    const select = document.getElementById("rol");
+    const { data, error } = await supabaseClient.from("rol").select("*");
+    if (error) {
+        select.innerHTML = `<option>Error</option>`;
+        return;
+    }
+    select.innerHTML = "";
+    data.forEach(r => {
+        select.innerHTML += `<option value="${r.id}">${r.nombre}</option>`;
+    });
+}
+
+// CARGAR ESTADOS
+async function getEstados() {
+    const select = document.getElementById("estado");
+    const { data, error } = await supabaseClient.from("estado").select("*");
+    if (error) {
+        select.innerHTML = `<option>Error</option>`;
+        return;
+    }
+    select.innerHTML = "";
+    data.forEach(e => {
+        select.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
+    });
+}
+
+// LISTAR USUARIOS
+async function getUsuarios() {
+    const { data, error } = await supabaseClient
+        .from("usuario")
+        .select(`*, rol (nombre), estado (nombre)`);
+
+    if (error) {
+        Swal.fire("Error", "No se pudieron cargar los datos", "error");
+        return;
+    }
+    cache = data;
+    render(data);
+}
+
+// PINTAR TABLA
+function render(data) {
+    const tabla = document.getElementById("tabla");
+    tabla.innerHTML = "";
+    
+    if (data.length === 0) {
+        tabla.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-gray-400 italic">No se encontraron usuarios...</td></tr>`;
+        return;
+    }
+
+    data.forEach((u, index) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-indigo-50/20 transition-colors group";
+        
+        // Estilos para badges
+        const rolClass = u.rol?.nombre === 'Administrador' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700';
+        const estadoClass = u.estado?.nombre === 'Activo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+
+        tr.innerHTML = `
+            <td class="p-5">
+                <div class="flex flex-col">
+                    <span class="text-gray-800 font-bold">${u.nombre || 'Sin nombre'}</span>
+                    <span class="text-gray-400 text-sm italic">${u.email}</span>
+                </div>
+            </td>
+            <td class="p-5 text-center">
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${rolClass}">${u.rol?.nombre || "N/A"}</span>
+            </td>
+            <td class="p-5 text-center">
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${estadoClass}">${u.estado?.nombre || "N/A"}</span>
+            </td>
+            <td class="p-5 text-right">
+                <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editarBtnClick(${index})" title="Editar" class="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </button>
+                    <button onclick="eliminar('${u.id}')" title="Eliminar" class="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </td>
+        `;
+        tabla.appendChild(tr);
+    });
+}
+
+// GUARDAR / ACTUALIZAR
+document.getElementById("form").onsubmit = async (e) => {
+    e.preventDefault();
+    
+    const data = {
+        nombre: document.getElementById("nombre").value,
+        email: document.getElementById("email").value,
+        rol_id: document.getElementById("rol").value,
+        estado_id: document.getElementById("estado").value
+    };
+    
+    const password = document.getElementById("password").value;
+    const id = document.getElementById("id").value;
+    
+    Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+    let error;
+
+    if (id) {
+        ({ error } = await supabaseClient.from("usuario").update(data).eq("id", id));
+    } else {
+        if (!password) {
+            Swal.fire("Error", "La contraseña es obligatoria para nuevos usuarios", "error");
+            return;
+        }
+        
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+            email: data.email,
+            password: password
+        });
+
+        if (authError) {
+            Swal.fire("Error Auth", authError.message, "error");
+            return;
+        }
+
+        data.auth_id = authData.user.id;
+        ({ error } = await supabaseClient.from("usuario").insert([data]));
+    }
+
+    if (error) {
+        Swal.fire("Error", error.message, "error");
+        return;
+    }
+
+    limpiarForm();
+    getUsuarios();
+    Swal.fire("¡Listo!", "Información guardada con éxito", "success");
+};
+
+// BOTÓN EDITAR EN TABLA
+function editarBtnClick(index) {
+    const u = cache[index];
+    document.getElementById("id").value = u.id;
+    document.getElementById("nombre").value = u.nombre;
+    document.getElementById("email").value = u.email;
+    document.getElementById("rol").value = u.rol_id;
+    document.getElementById("estado").value = u.estado_id;
+    
+    document.getElementById("btn-cancelar").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// LIMPIAR FORM
+function limpiarForm() {
+    document.getElementById("form").reset();
+    document.getElementById("id").value = "";
+    document.getElementById("btn-cancelar").classList.add("hidden");
+}
+
+// ELIMINAR
+async function eliminar(id) {
+    const res = await Swal.fire({
+        title: '¿Confirmas la eliminación?',
+        text: "Esta acción no se puede deshacer",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#4f46e5',
+        cancelButtonColor: '#ef4444',
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'No, cancelar'
+    });
+
+    if (res.isConfirmed) {
+        const { error } = await supabaseClient.from("usuario").delete().eq("id", id);
+        if (error) {
+            Swal.fire("Error", error.message, "error");
+            return;
+        }
+        getUsuarios();
+        Swal.fire('Borrado', 'El usuario ha sido eliminado.', 'success');
+    }
+}
+
+// FILTRAR
+function filtrar() {
+    const q = document.getElementById("search").value.toLowerCase();
+    const f = cache.filter(u =>
+        u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+    );
+    render(f);
+}
+
+// INICIALIZACIÓN
+window.onload = async () => {
+    await checkAuth();
+    Promise.allSettled([getRoles(), getEstados(), getUsuarios()]);
+};
+</script>
+</body>
+</html>

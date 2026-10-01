@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fit Work | Actívate mientras estudias</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.3px;
+            padding-bottom: 120px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --accent-green: #00e676;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-tertiary: #808080;
+            --border-color: #2d2d2d;
+            --radius: 15px;
+            --radius-lg: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .max-w-6xl {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .px-4 {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .text-3xl {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .text-2xl {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .mb-6 {
+            margin-bottom: 24px;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .gap-6 {
+            gap: 24px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            padding: 32px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .header-title p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(0, 230, 118, 0.1);
+            color: var(--accent-green);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            width: fit-content;
+            margin-bottom: 16px;
+        }
+
+        .header-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: #121212;
+            box-shadow: 0 8px 24px rgba(0, 230, 118, 0.25);
+        }
+
+        .btn-primary:hover {
+            background-color: #00cc5f;
+            box-shadow: 0 12px 32px rgba(0, 230, 118, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-card);
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(0, 230, 118, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            width: min(100%, 420px);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .modal-close {
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: #161616;
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.15);
+        }
+
+        .field-error {
+            min-height: 16px;
+            margin-top: 6px;
+            color: #ff6b6b;
+            font-size: 12px;
+        }
+
+        .modal-actions {
+            margin-top: 8px;
+        }
+
+        .modal-actions .btn {
+            width: 100%;
+        }
+
+        .challenge-button.completed {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .leaderboard-row .leaderboard-rank {
+            font-weight: 700;
+        }
+
+        /* Hero Grid */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .hero-card {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            aspect-ratio: 1;
+            min-height: 200px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .hero-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-card-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(18, 18, 18, 0.8) 50%, rgba(18, 18, 18, 0.95) 100%);
+            padding: 20px;
+        }
+
+        .hero-card-badge {
+            display: inline-flex;
+            background: rgba(0, 230, 118, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .hero-card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Features */
+        .features-section {
+            margin-top: 48px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .feature-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .feature-card-body {
+            padding: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 230, 118, 0.12);
+        }
+
+        /* Stats */
+        .stats-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px 20px;
+            margin-top: 48px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent-green);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Programs */
+        .programs-section {
+            margin-top: 48px;
+        }
+
+        .programs-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .program-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .program-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .program-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .program-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .program-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .program-item {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .program-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 230, 118, 0.12);
+        }
+
+        /* Challenges */
+        .challenges-section {
+            margin-top: 48px;
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .challenge-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .challenge-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .challenge-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .challenge-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .challenge-badge {
+            background-color: var(--accent-green);
+            color: #121212;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 12px;
+        }
+
+        .challenge-participants {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .testimonial-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .testimonial-rating {
+            margin-bottom: 12px;
+        }
+
+        .testimonial-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .testimonial-role {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Benefits */
+        .benefits-section {
+            margin-top: 48px;
+        }
+
+        .benefits-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .benefits-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .benefits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .benefits-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .benefits-icon {
+            font-size: 24px;
+        }
+
+        .benefits-item-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .benefits-item-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.1) 0%, rgba(0, 230, 118, 0.05) 100%);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 32px 20px;
+            margin-top: 48px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .cta-description {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 32px 0;
+            margin-top: 48px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .footer-column h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-column p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-link {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-green);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(18, 18, 18, 0.98);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            z-index: 50;
+        }
+
+        .bottom-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.04);
+            transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+        }
+
+        .bottom-nav a:hover {
+            color: #ffffff;
+            background-color: rgba(0, 230, 118, 0.14);
+            transform: translateY(-1px);
+        }
+
+        .leaderboard-section {
+            margin-top: 48px;
+        }
+
+        .leaderboard-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+            gap: 16px;
+            padding: 16px 20px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .leaderboard-row.header {
+            background-color: rgba(0, 230, 118, 0.05);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .leaderboard-row:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-rank {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .challenge-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .challenge-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(0, 230, 118, 0.08);
+        }
+
+        .challenge-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 12px 18px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            background-color: rgba(0, 230, 118, 0.08);
+            color: var(--accent-green);
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background-color 0.25s ease, transform 0.25s ease;
+        }
+
+        .challenge-button:hover {
+            background-color: rgba(0, 230, 118, 0.16);
+            transform: translateY(-1px);
+        }
+
+        .contact-section {
+            margin-top: 48px;
+        }
+
+        .contact-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .contact-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .contact-label {
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 12px;
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .contact-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .contact-body {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .contact-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .contact-item p {
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            background-color: rgba(255,255,255,0.05);
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .social-btn:hover {
+            background-color: rgba(0, 230, 118, 0.12);
+            border-color: var(--accent-green);
+        }
+
+        .social-btn-instagram {
+            color: #f56040;
+            border-color: rgba(245, 96, 64, 0.4);
+        }
+
+        .social-btn-tiktok {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Responsive Tablet */
+        @media (min-width: 640px) {
+            .hero-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .programs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .challenges-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cta-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        /* Responsive Desktop */
+        @media (min-width: 1024px) {
+            header {
+                flex-direction: row;
+                gap: 48px;
+            }
+
+            .header-title {
+                flex: 1;
+            }
+
+            .header-title h1 {
+                font-size: 40px;
+            }
+
+            .hero-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .programs-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .challenges-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body id="top">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <span class="header-badge">🎯 Fit Work</span>
+                <h1>Una plataforma moderna para activar tu cuerpo y tu mente</h1>
+                <p>Encuentra rutinas cortas, desafíos diarios y contenido visual inspirador pensado para estudiantes que quieren ejercitarse sin perder el ritmo de sus estudios.</p>
+                <div class="header-cta">
+                    <button type="button" class="btn btn-primary" id="open-login-modal">Iniciar sesión</button>
+                    <button type="button" class="btn btn-secondary" id="open-register-modal">Crear cuenta</button>
+                </div>
+            </div>
+            <div class="hero-grid">
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80" alt="Estudiante haciendo ejercicio">
+                    <div class="hero-card-content">
+                        <span class="hero-card-badge">Motivación</span>
+                        <h2>Entrena entre clases</h2>
+                    </div>
+                </div>
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1526401485004-8dd4e3deb7db?auto=format&fit=crop&w=800&q=80" alt="Grupo de estudiantes activos">
+                    <div class="hero-card-content">
+                        <span class="hero-card-badge">Comunidad</span>
+                        <h2>Comparte tus logros</h2>
+                    </div>
+                </div>
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?auto=format&fit=crop&w=800&q=80" alt="Persona usando app fitness">
+                    <div class="hero-card-content">
+                        <span class="hero-card-badge">Digital</span>
+                        <h2>Diseñado para estudiantes</h2>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Características principales -->
+        <section class="features-section">
+            <h2 class="text-3xl font-bold mb-6">Características principales</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" alt="Caminata activa">
+                    <div class="feature-card-body">
+                        <h3>Mini rutinas</h3>
+                        <p>Sesiones fáciles de realizar en cualquier momento, incluso entre clases o entre estudios.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1526401281623-2d7d9f2d158f?auto=format&fit=crop&w=800&q=80" alt="Ejercicio con amigos">
+                    <div class="feature-card-body">
+                        <h3>Retos semanales</h3>
+                        <p>Supera metas claras y suma progresos con una experiencia visual que te inspira cada día.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1540206395-68808572332f?auto=format&fit=crop&w=800&q=80" alt="Estudiante relajado">
+                    <div class="feature-card-body">
+                        <h3>Bienestar total</h3>
+                        <p>Mejora tu energía, reduce el estrés y encuentra un equilibrio real entre estudio y ejercicio.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Programas de entrenamiento -->
+        <section class="programs-section" id="programas">
+            <h2 class="text-3xl font-bold mb-6">Programas de entrenamiento</h2>
+            <div class="programs-grid">
+                <div class="program-card">
+                    <div class="program-icon">💪</div>
+                    <h3>Fuerza y resistencia</h3>
+                    <p>Rutinas diseñadas para fortalecer tu cuerpo, mejorar tu resistencia cardiovascular y tonificar músculos.</p>
+                    <div class="program-list">
+                        <div class="program-item">✓ 15-30 min por sesión</div>
+                        <div class="program-item">✓ Sin equipamiento necesario</div>
+                        <div class="program-item">✓ Progresión semanal</div>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <div class="program-icon">🧘</div>
+                    <h3>Flexibilidad y yoga</h3>
+                    <p>Mejora tu flexibilidad, reduce tensiones y encuentra paz mental con sesiones de yoga y estiramiento.</p>
+                    <div class="program-list">
+                        <div class="program-item">✓ 10-20 min por sesión</div>
+                        <div class="program-item">✓ Relajación y bienestar</div>
+                        <div class="program-item">✓ Reduce el estrés</div>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <div class="program-icon">🏃</div>
+                    <h3>Cardio intenso</h3>
+                    <p>Entrena tu corazón con rutinas de alto impacto que aceleran tu metabolismo y queman calorías.</p>
+                    <div class="program-list">
+                        <div class="program-item">✓ 20-40 min por sesión</div>
+                        <div class="program-item">✓ Quemagrasas efectivo</div>
+                        <div class="program-item">✓ Aumenta energía</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Desafíos físicos reales -->
+        <section class="challenges-section" id="desafios">
+            <h2 class="text-3xl font-bold mb-6">Desafíos físicos reales</h2>
+            <div class="challenges-grid">
+                <div class="challenge-card">
+                    <div class="challenge-title">🏃 Reto de Resistencia</div>
+                    <div class="challenge-description">Realiza 20 vueltas a la cancha de fútbol del colegio en un solo entrenamiento.</div>
+                    <button type="button" class="challenge-button" data-challenge="resistencia" data-points="50">Completar</button>
+                </div>
+                <div class="challenge-card">
+                    <div class="challenge-title">💪 Reto de Fuerza</div>
+                    <div class="challenge-description">Haz una rutina de flexiones en las barras del gimnasio escolar manteniendo buena técnica.</div>
+                    <button type="button" class="challenge-button" data-challenge="fuerza" data-points="70">Completar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ranking de estudiantes -->
+        <section class="leaderboard-section" id="ranking">
+            <h2 class="text-3xl font-bold mb-6">Ranking de estudiantes</h2>
+            <div class="leaderboard-card">
+                <div class="leaderboard-row header">
+                    <span>Posición</span>
+                    <span>Estudiante</span>
+                    <span>Puntos</span>
+                </div>
+                <div class="leaderboard-row" data-player="Jerónimo">
+                    <span class="leaderboard-rank">1</span>
+                    <span>Jerónimo</span>
+                    <span class="leaderboard-points">350 pts</span>
+                </div>
+                <div class="leaderboard-row" data-player="Brayan">
+                    <span class="leaderboard-rank">2</span>
+                    <span>Brayan</span>
+                    <span class="leaderboard-points">310 pts</span>
+                </div>
+                <div class="leaderboard-row" data-player="Sofía">
+                    <span class="leaderboard-rank">3</span>
+                    <span>Sofía</span>
+                    <span class="leaderboard-points">290 pts</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonios -->
+        <section class="challenges-section">
+            <h2 class="text-3xl font-bold mb-6">Lo que dicen nuestros usuarios</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Fit Work cambió mi vida. Antes no tenía tiempo para hacer ejercicio, ahora hago 15 minutos entre clases y me siento increíble"</p>
+                    <div class="testimonial-author">María Rodríguez</div>
+                    <div class="testimonial-role">Estudiante de Ingeniería</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"La comunidad es lo mejor. Ver a otros estudiantes motivándose mutuamente me impulsa a seguir adelante cada día"</p>
+                    <div class="testimonial-author">Carlos Mendez</div>
+                    <div class="testimonial-role">Estudiante de Administración</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Los desafíos semanales me mantienen comprometida. He perdido 5 kg en 3 meses sin dejar de estudiar"</p>
+                    <div class="testimonial-author">Sofia González</div>
+                    <div class="testimonial-role">Estudiante de Medicina</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Beneficios -->
+        <section class="benefits-section">
+            <div class="grid grid-cols-1 gap-6">
+                <div class="benefits-card">
+                    <div class="benefits-title">✨ Beneficios para tu salud</div>
+                    <div class="benefits-list">
+                        <div class="benefits-item">
+                            <div class="benefits-icon">💚</div>
+                            <div>
+                                <div class="benefits-item-title">Sistema cardiovascular</div>
+                                <div class="benefits-item-desc">Fortalece tu corazón y circulación</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">🧠</div>
+                            <div>
+                                <div class="benefits-item-title">Concentración mental</div>
+                                <div class="benefits-item-desc">Mejora memoria y enfoque</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">⚡</div>
+                            <div>
+                                <div class="benefits-item-title">Energía aumentada</div>
+                                <div class="benefits-item-desc">Levanta tu ánimo y vitalidad</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">😌</div>
+                            <div>
+                                <div class="benefits-item-title">Menos estrés</div>
+                                <div class="benefits-item-desc">Reduce ansiedad diaria</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">💪</div>
+                            <div>
+                                <div class="benefits-item-title">Autoestima</div>
+                                <div class="benefits-item-desc">Aumenta confianza en ti mismo</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">😴</div>
+                            <div>
+                                <div class="benefits-item-title">Mejor sueño</div>
+                                <div class="benefits-item-desc">Duerme profundo y reparador</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefits-card">
+                    <div class="benefits-title">🚀 Por qué Fit Work</div>
+                    <div class="benefits-list">
+                        <div class="benefits-item">
+                            <div class="benefits-icon">🎯</div>
+                            <div>
+                                <div class="benefits-item-title">Para estudiantes</div>
+                                <div class="benefits-item-desc">Diseñado específicamente para ti</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">📱</div>
+                            <div>
+                                <div class="benefits-item-title">Acceso total</div>
+                                <div class="benefits-item-desc">Desde cualquier dispositivo</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">🤝</div>
+                            <div>
+                                <div class="benefits-item-title">Comunidad activa</div>
+                                <div class="benefits-item-desc">Conecta con otros estudiantes</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">🎁</div>
+                            <div>
+                                <div class="benefits-item-title">Recompensas</div>
+                                <div class="benefits-item-desc">Gana logros y XP</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">📊</div>
+                            <div>
+                                <div class="benefits-item-title">Seguimiento</div>
+                                <div class="benefits-item-desc">Ve tu progreso en detalle</div>
+                            </div>
+                        </div>
+                        <div class="benefits-item">
+                            <div class="benefits-icon">🆓</div>
+                            <div>
+                                <div class="benefits-item-title">Contenido premium</div>
+                                <div class="benefits-item-desc">Acceso a todo desde el inicio</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Final -->
+        <section class="cta-section">
+            <h2 class="cta-title">¿Listo para transformar tu vida?</h2>
+            <p class="cta-description">Únete a miles de estudiantes que ya están mejorando su salud y aumentando su energía con Fit Work. El primer paso comienza hoy.</p>
+            <div class="cta-buttons">
+                <button type="button" class="btn btn-primary" data-open-register>Registrarme ahora</button>
+                <button type="button" class="btn btn-secondary" data-open-login>Ya tengo cuenta</button>
+            </div>
+        </section>
+
+        <!-- Contacto e Equipo -->
+        <section class="contact-section" id="contacto">
+            <div class="contact-card">
+                <div class="contact-header">
+                    <div>
+                        <p class="contact-label">Equipo de Desarrollo</p>
+                        <h2 class="contact-title">Sofía, Jerónimo y Brayan</h2>
+                    </div>
+                </div>
+                <div class="contact-body">
+                    <div class="contact-item">
+                        <span class="contact-item-title">Contacto institucional</span>
+                        <p>ruasofia@iemab.edu.co</p>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-item-title">Redes sociales</span>
+                        <div class="social-buttons">
+                            <button type="button" class="social-btn social-btn-instagram" data-social-url="https://www.instagram.com/">Instagram</button>
+                            <button type="button" class="social-btn social-btn-tiktok" data-social-url="https://www.tiktok.com/">TikTok</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Fit Work</h4>
+                    <p>La plataforma de fitness diseñada para estudiantes activos que quieren mejorar su salud sin sacrificar sus estudios.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Programa</h4>
+                    <div class="footer-links">
+                        <a href="#programas" class="footer-link">Entrenamientos</a>
+                        <a href="#desafios" class="footer-link">Desafíos</a>
+                        <a href="#ranking" class="footer-link">Comunidad</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Compañía</h4>
+                    <div class="footer-links">
+                        <a href="#contacto" class="footer-link">Sobre nosotros</a>
+                        <a href="#contacto" class="footer-link">Contacto</a>
+                        <a href="#top" class="footer-link">Blog</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Síguenos</h4>
+                    <div class="footer-links">
+                        <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" class="footer-link">Instagram</a>
+                        <a href="https://x.com/" target="_blank" rel="noreferrer" class="footer-link">Twitter</a>
+                        <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" class="footer-link">YouTube</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Fit Work. Todos los derechos reservados. | <a href="#top" class="footer-link">Privacidad</a> | <a href="#top" class="footer-link">Términos</a></p>
+            </div>
+        </footer>
+    </div>
+    <nav class="bottom-nav">
+        <a href="index.html">🏠 Inicio</a>
+        <a href="desafios.html#desafios">🎯 Desafíos</a>
+        <a href="ranking.html">🏆 Ranking</a>
+        <a href="perfil.html">👤 Perfil</a>
+    </nav>
+
+    <div class="modal-overlay" id="login-modal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+            <div class="modal-header">
+                <div>
+                    <span class="header-badge">🔐 Acceso</span>
+                    <h3 id="login-modal-title">Inicia sesión</h3>
+                </div>
+                <button type="button" class="modal-close" id="close-login-modal" aria-label="Cerrar">✕</button>
+            </div>
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="login-email">Correo electrónico</label>
+                    <input id="login-email" type="email" placeholder="correo@ejemplo.com" autocomplete="email">
+                    <p class="field-error" id="email-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
+                    <p class="field-error" id="password-error"></p>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="register-modal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="register-modal-title">
+            <div class="modal-header">
+                <div>
+                    <span class="header-badge">✨ Crear cuenta</span>
+                    <h3 id="register-modal-title">Únete a Fit Work</h3>
+                </div>
+                <button type="button" class="modal-close" id="close-register-modal" aria-label="Cerrar">✕</button>
+            </div>
+            <form id="register-form" novalidate>
+                <div class="form-group">
+                    <label for="register-name">Nombre completo</label>
+                    <input id="register-name" type="text" placeholder="Tu nombre" autocomplete="name">
+                    <p class="field-error" id="name-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Correo electrónico</label>
+                    <input id="register-email" type="email" placeholder="correo@ejemplo.com" autocomplete="email">
+                    <p class="field-error" id="register-email-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input id="register-password" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                    <p class="field-error" id="register-password-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirmar contraseña</label>
+                    <input id="register-confirm-password" type="password" placeholder="Repite tu contraseña" autocomplete="new-password">
+                    <p class="field-error" id="confirm-password-error"></p>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Crear cuenta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const loginModal = document.getElementById('login-modal');
+        const registerModal = document.getElementById('register-modal');
+        const openLoginModalButton = document.getElementById('open-login-modal');
+        const openRegisterModalButton = document.getElementById('open-register-modal');
+        const closeLoginModalButton = document.getElementById('close-login-modal');
+        const closeRegisterModalButton = document.getElementById('close-register-modal');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        const registerNameInput = document.getElementById('register-name');
+        const registerEmailInput = document.getElementById('register-email');
+        const registerPasswordInput = document.getElementById('register-password');
+        const registerConfirmPasswordInput = document.getElementById('register-confirm-password');
+        const nameError = document.getElementById('name-error');
+        const registerEmailError = document.getElementById('register-email-error');
+        const registerPasswordError = document.getElementById('register-password-error');
+        const confirmPasswordError = document.getElementById('confirm-password-error');
+
+        function openLoginModal() {
+            closeRegisterModal();
+            loginModal.classList.add('active');
+            loginModal.setAttribute('aria-hidden', 'false');
+            emailInput.focus();
+        }
+
+        function openRegisterModal() {
+            closeLoginModal();
+            registerModal.classList.add('active');
+            registerModal.setAttribute('aria-hidden', 'false');
+            registerNameInput.focus();
+        }
+
+        function closeLoginModal() {
+            loginModal.classList.remove('active');
+            loginModal.setAttribute('aria-hidden', 'true');
+            loginForm.reset();
+            emailError.textContent = '';
+            passwordError.textContent = '';
+        }
+
+        function closeRegisterModal() {
+            registerModal.classList.remove('active');
+            registerModal.setAttribute('aria-hidden', 'true');
+            registerForm.reset();
+            nameError.textContent = '';
+            registerEmailError.textContent = '';
+            registerPasswordError.textContent = '';
+            confirmPasswordError.textContent = '';
+        }
+
+        openLoginModalButton?.addEventListener('click', openLoginModal);
+        openRegisterModalButton?.addEventListener('click', openRegisterModal);
+        closeLoginModalButton?.addEventListener('click', closeLoginModal);
+        closeRegisterModalButton?.addEventListener('click', closeRegisterModal);
+
+        document.querySelectorAll('[data-open-login]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                openLoginModal();
+            });
+        });
+
+        document.querySelectorAll('[data-open-register]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                openRegisterModal();
+            });
+        });
+
+        [loginModal, registerModal].forEach((modal) => {
+            modal?.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal === loginModal ? closeLoginModal() : closeRegisterModal();
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (loginModal.classList.contains('active')) {
+                    closeLoginModal();
+                } else if (registerModal.classList.contains('active')) {
+                    closeRegisterModal();
+                }
+            }
+        });
+
+        loginForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            emailError.textContent = '';
+            passwordError.textContent = '';
+
+            let isValid = true;
+
+            if (!email) {
+                emailError.textContent = 'Ingresa tu correo electrónico.';
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailError.textContent = 'Ingresa un correo válido.';
+                isValid = false;
+            }
+
+            if (!password) {
+                passwordError.textContent = 'Ingresa tu contraseña.';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            window.location.href = 'perfil.html';
+        });
+
+        registerForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const name = registerNameInput.value.trim();
+            const email = registerEmailInput.value.trim();
+            const password = registerPasswordInput.value.trim();
+            const confirmPassword = registerConfirmPasswordInput.value.trim();
+
+            nameError.textContent = '';
+            registerEmailError.textContent = '';
+            registerPasswordError.textContent = '';
+            confirmPasswordError.textContent = '';
+
+            let isValid = true;
+
+            if (!name) {
+                nameError.textContent = 'Ingresa tu nombre.';
+                isValid = false;
+            }
+
+            if (!email) {
+                registerEmailError.textContent = 'Ingresa tu correo electrónico.';
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                registerEmailError.textContent = 'Ingresa un correo válido.';
+                isValid = false;
+            }
+
+            if (!password) {
+                registerPasswordError.textContent = 'Ingresa una contraseña.';
+                isValid = false;
+            } else if (password.length < 6) {
+                registerPasswordError.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+                isValid = false;
+            }
+
+            if (!confirmPassword) {
+                confirmPasswordError.textContent = 'Confirma tu contraseña.';
+                isValid = false;
+            } else if (password && confirmPassword && password !== confirmPassword) {
+                confirmPasswordError.textContent = 'Las contraseñas no coinciden.';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+            closeRegisterModal();
+        });
+
+        const challengeButtons = document.querySelectorAll('[data-challenge]');
+        const leaderboardRows = Array.from(document.querySelectorAll('.leaderboard-row[data-player]'));
+        const socialButtons = document.querySelectorAll('[data-social-url]');
+
+        challengeButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                if (button.classList.contains('completed')) {
+                    return;
+                }
+
+                const points = Number(button.dataset.points || 0);
+                const playerRow = leaderboardRows.find((row) => row.dataset.player === 'Jerónimo');
+                const currentPoints = Number((playerRow?.querySelector('.leaderboard-points')?.textContent || '0 pts').replace(/[^0-9]/g, ''));
+                const newPoints = currentPoints + points;
+
+                if (playerRow) {
+                    const pointsCell = playerRow.querySelector('.leaderboard-points');
+                    pointsCell.textContent = `${newPoints} pts`;
+                }
+
+                button.classList.add('completed');
+                button.textContent = 'Completado';
+                alert(`¡Desafío completado! Ganaste ${points} puntos.`);
+            });
+        });
+
+        socialButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const url = button.dataset.socialUrl;
+                if (url) {
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

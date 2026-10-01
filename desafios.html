@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fit Work | Desafíos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #0d0d0d;
+            --panel: #121212;
+            --panel-soft: rgba(255,255,255,0.04);
+            --accent: #1ed760;
+            --text: #ffffff;
+            --muted: #9a9a9a;
+            --border: rgba(255,255,255,0.08);
+            --radius: 18px;
+            --shadow: 0 24px 80px rgba(0,0,0,0.45);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d0d0d;
+            color: var(--text);
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(30,215,96,0.08), transparent 28%),
+                        linear-gradient(180deg, rgba(255,255,255,0.03), transparent 45%, rgba(0,0,0,0.65));
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px 130px;
+            position: relative;
+            z-index: 1;
+        }
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.06);
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.08em;
+            margin-bottom: 24px;
+        }
+        .hero {
+            display: grid;
+            gap: 20px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow);
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.25rem);
+            line-height: 1.02;
+            letter-spacing: -0.04em;
+        }
+        .hero-status {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .hero-status span {
+            color: var(--accent);
+        }
+        .hero p {
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.8;
+            max-width: 720px;
+        }
+        .section-title {
+            margin-top: 34px;
+            margin-bottom: 18px;
+            font-size: 0.95rem;
+            color: var(--muted);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+        .cards-grid {
+            display: grid;
+            gap: 18px;
+        }
+        .activity-card {
+            background: #111111;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.32);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .activity-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(30,215,96,0.35);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.42);
+        }
+        .activity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .activity-badge span {
+            color: var(--accent);
+        }
+        .activity-heading {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            line-height: 1.18;
+        }
+        .activity-subtitle {
+            color: var(--muted);
+            font-size: 0.98rem;
+            line-height: 1.8;
+            margin-bottom: 18px;
+        }
+        .activity-timer {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(30,215,96,0.08);
+            border: 1px solid rgba(30,215,96,0.25);
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+        }
+        .activity-timer.visible {
+            display: flex;
+        }
+        .activity-timer .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ff4d4d;
+            animation: pulse-dot 1s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+        .activity-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(30,215,96,0.22);
+            background: linear-gradient(180deg, rgba(30,215,96,0.12), rgba(30,215,96,0.06));
+            color: var(--accent);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+        .activity-cta:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(180deg, rgba(30,215,96,0.18), rgba(30,215,96,0.08));
+        }
+        .activity-cta.stop {
+            border-color: rgba(255,77,77,0.35);
+            background: linear-gradient(180deg, rgba(255,77,77,0.16), rgba(255,77,77,0.06));
+            color: #ff8080;
+        }
+        .activity-cta.pending {
+            opacity: 0.7;
+            cursor: default;
+            pointer-events: none;
+            border-color: rgba(250,204,21,0.3);
+            background: rgba(250,204,21,0.08);
+            color: #facc15;
+        }
+        .activity-cta.done {
+            opacity: 0.55;
+            cursor: default;
+            pointer-events: none;
+            border-color: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+        }
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            padding: 14px 20px;
+            background: #000000;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            z-index: 10;
+        }
+        .bottom-nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 700;
+            padding: 12px 16px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.02);
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .bottom-nav a.active,
+        .bottom-nav a:hover {
+            color: #ffffff;
+            background: rgba(30,215,96,0.14);
+        }
+        @media (max-width: 640px) {
+            .hero { padding: 24px; }
+            .activity-card { padding: 22px; }
+            .activity-heading { font-size: 1.18rem; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="brand-pill" id="brand-initial">•</div>
+        <section class="hero">
+            <div>
+                <h1 id="hero-name">¡Hola! 👋</h1>
+                <p class="hero-status">Puesto en el Ranking: <span id="hero-rank">Cargando...</span></p>
+            </div>
+            <p>Inicia el cronómetro, haz el ejercicio y avísale a tu profesor para que apruebe tus puntos.</p>
+        </section>
+
+        <p class="section-title">🎯 Catálogo de Actividades Fit Work</p>
+
+        <div class="cards-grid" id="cards-grid">
+            <article class="activity-card" data-id="futbol10" data-points="20">
+                <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                <h2 class="activity-heading">Clásico de Microfútbol en el Descanso</h2>
+                <p class="activity-subtitle">Arma el partido con tus amigos en el patio. Jugar 10 minutos activa tus reflejos y suma tus primeros puntos.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="yoga_zen" data-points="20">
+                <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                <h2 class="activity-heading">Estiramiento y Yoga Zen</h2>
+                <p class="activity-subtitle">Relaja tus hombros y espalda usando las colchonetas del gimnasio. Ideal para liberar el estrés entre clases.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="pingpong" data-points="20">
+                <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                <h2 class="activity-heading">Torneo Relámpago de Ping-Pong</h2>
+                <p class="activity-subtitle">Juega una partida rápida en las mesas del colegio. Activa tu concentración y coordinación mano-ojo.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="trote10" data-points="50">
+                <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                <h2 class="activity-heading">Trote de Resistencia Base</h2>
+                <p class="activity-subtitle">Completa 10 vueltas seguidas a ritmo constante alrededor de la cancha principal para mejorar tu capacidad cardiovascular.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="baile" data-points="50">
+                <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                <h2 class="activity-heading">Reto de Ritmo y Coreografía</h2>
+                <p class="activity-subtitle">Sigue una rutina corta de baile o aeróbicos grupales en el patio durante las jornadas recreativas del proyecto.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="cuerda3" data-points="50">
+                <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                <h2 class="activity-heading">Minuto de Fuego con Cuerda</h2>
+                <p class="activity-subtitle">Consigue una cuerda en el área de deportes y realiza 3 series de 1 minuto continuo de saltos veloces.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="abs3" data-points="50">
+                <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                <h2 class="activity-heading">Fuerza Abdominal en Colchoneta</h2>
+                <p class="activity-subtitle">Completa una rutina concentrada de 3 series de 20 abdominales cortas en la zona de entrenamiento.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="vueltas20" data-points="100">
+                <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                <h2 class="activity-heading">El Reto Reina: 20 Vueltas a la Cancha</h2>
+                <p class="activity-subtitle">Pon a prueba tu resistencia máxima dando 20 vueltas completas a la cancha grande de fútbol del colegio.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="barras" data-points="100">
+                <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                <h2 class="activity-heading">Calistenia Estricta en Barras</h2>
+                <p class="activity-subtitle">Rutina de fuerza pura: Ejecuta 3 series de 8 dominadas o colgadas controladas en las barras del gimnasio.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+
+            <article class="activity-card" data-id="burpees" data-points="100">
+                <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                <h2 class="activity-heading">Potencia Total con Burpees</h2>
+                <p class="activity-subtitle">Completa 3 series intensas de 12 burpees seguidos (flexión, sentadilla y salto) en el menor tiempo posible.</p>
+                <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                <a href="#" class="activity-cta">Iniciar Reto</a>
+            </article>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html">🏠 Inicio</a>
+        <a href="desafios.html" class="active">🎯 Desafíos</a>
+        <a href="ranking.html">🏆 Ranking</a>
+    </nav>
+
+    <script>
+        const SUPABASE_URL = "https://crjtcercspirgzzmzeax.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_ULR8jNd9FD7W4Khudk0ebw_kCp_R4fM";
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUser = null;
+        const timers = {};
+
+        const CHALLENGE_TITLES = {
+            futbol10: "Clásico de Microfútbol en el Descanso",
+            yoga_zen: "Estiramiento y Yoga Zen",
+            pingpong: "Torneo Relámpago de Ping-Pong",
+            trote10: "Trote de Resistencia Base",
+            baile: "Reto de Ritmo y Coreografía",
+            cuerda3: "Minuto de Fuego con Cuerda",
+            abs3: "Fuerza Abdominal en Colchoneta",
+            vueltas20: "El Reto Reina: 20 Vueltas a la Cancha",
+            barras: "Calistenia Estricta en Barras",
+            burpees: "Potencia Total con Burpees"
+        };
+
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+            const s = (totalSeconds % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
+        }
+
+        async function ensureSession() {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            if (error || !user) {
+                window.location.href = "login.html";
+                return null;
+            }
+            return user;
+        }
+
+        async function loadHero(user) {
+            const { data } = await supabaseClient
+                .from("usuario")
+                .select("nombre, puntos")
+                .eq("auth_id", user.id)
+                .maybeSingle();
+
+            const nombre = data?.nombre || user.email || "Usuario";
+            const puntos = data?.puntos ?? 0;
+
+            document.getElementById("hero-name").textContent = `¡Hola, ${nombre}! 👋`;
+            document.getElementById("brand-initial").textContent = nombre.charAt(0).toUpperCase();
+
+            const { data: rows } = await supabaseClient
+                .from("usuario")
+                .select("auth_id, puntos")
+                .order("puntos", { ascending: false });
+
+            const rankEl = document.getElementById("hero-rank");
+            if (rows) {
+                const position = rows.findIndex(r => r.auth_id === user.id) + 1;
+                rankEl.textContent = position > 0 ? `#${position} (${puntos} pts)` : `${puntos} pts`;
+            } else {
+                rankEl.textContent = `${puntos} pts`;
+            }
+        }
+
+        async function applySolicitudStates() {
+            const { data: solicitudes } = await supabaseClient
+                .from("solicitud_reto")
+                .select("challenge_id, estado")
+                .eq("auth_id", currentUser.id);
+
+            if (!solicitudes) return;
+
+            const estadoPorReto = {};
+            solicitudes.forEach(s => {
+                const actual = estadoPorReto[s.challenge_id];
+                if (!actual || s.estado === "aprobado" || (s.estado === "pendiente" && actual !== "aprobado")) {
+                    estadoPorReto[s.challenge_id] = s.estado;
+                }
+            });
+
+            document.querySelectorAll(".activity-card").forEach(card => {
+                const id = card.dataset.id;
+                const estado = estadoPorReto[id];
+                const btn = card.querySelector(".activity-cta");
+
+                if (estado === "aprobado") {
+                    btn.classList.add("done");
+                    btn.textContent = "✓ Puntos aprobados";
+                } else if (estado === "pendiente") {
+                    btn.classList.add("pending");
+                    btn.textContent = "⏳ Esperando aprobación del profesor";
+                }
+            });
+        }
+
+        function startTimer(card) {
+            const id = card.dataset.id;
+            const btn = card.querySelector(".activity-cta");
+            const timerBox = card.querySelector(".activity-timer");
+            const timerText = card.querySelector(".timer-text");
+
+            timers[id] = { seconds: 0 };
+            timerBox.classList.add("visible");
+            btn.textContent = "Finalizar Reto (00:00)";
+            btn.classList.add("stop");
+
+            timers[id].intervalId = setInterval(() => {
+                timers[id].seconds += 1;
+                const formatted = formatTime(timers[id].seconds);
+                timerText.textContent = formatted;
+                btn.textContent = `Finalizar Reto (${formatted})`;
+            }, 1000);
+        }
+
+        async function stopTimerAndSubmit(card) {
+            const id = card.dataset.id;
+            const points = Number(card.dataset.points);
+            const title = CHALLENGE_TITLES[id];
+            const btn = card.querySelector(".activity-cta");
+
+            clearInterval(timers[id].intervalId);
+            const seconds = timers[id].seconds;
+            delete timers[id];
+
+            btn.classList.remove("stop");
+            btn.textContent = "Guardando...";
+
+            const { error } = await supabaseClient.from("solicitud_reto").insert({
+                auth_id: currentUser.id,
+                challenge_id: id,
+                titulo: title,
+                puntos: points,
+                tiempo_segundos: seconds,
+                estado: "pendiente"
+            });
+
+            if (error) {
+                btn.classList.add("stop");
+                btn.textContent = `Finalizar Reto (${formatTime(seconds)})`;
+                Swal.fire("Error", "No se pudo enviar el reto. Intenta de nuevo.", "error");
+                return;
+            }
+
+            btn.classList.add("pending");
+            btn.textContent = "⏳ Esperando aprobación del profesor";
+            Swal.fire({
+                title: "¡Reto enviado!",
+                text: `Avísale a tu profesor para que confirme en persona y apruebe tus ${points} puntos.`,
+                icon: "success"
+            });
+        }
+
+        function handleClick(card) {
+            const id = card.dataset.id;
+            const btn = card.querySelector(".activity-cta");
+
+            if (btn.classList.contains("pending") || btn.classList.contains("done")) return;
+
+            if (timers[id]) {
+                stopTimerAndSubmit(card);
+            } else {
+                startTimer(card);
+            }
+        }
+
+        window.addEventListener("load", async () => {
+            currentUser = await ensureSession();
+            if (!currentUser) return;
+
+            document.querySelectorAll(".activity-card").forEach(card => {
+                const btn = card.querySelector(".activity-cta");
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    handleClick(card);
+                });
+            });
+
+            await loadHero(currentUser);
+            await applySolicitudStates();
+        });
+    </script>
+</body>
+</html>

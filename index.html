@@ -3,1193 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fit Work | Actívate mientras estudias</title>
+    <meta name="description" content="FITWORK - Plataforma de fitness para estudiantes.">
+    <title>FITWORK | Entrena hoy, mejora mañana</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            line-height: 1.6;
-            letter-spacing: -0.3px;
-            padding-bottom: 120px;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         :root {
-            --bg-dark: #121212;
-            --bg-card: #1e1e1e;
-            --accent-green: #00e676;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --text-tertiary: #808080;
-            --border-color: #2d2d2d;
-            --radius: 15px;
-            --radius-lg: 20px;
+            --bg: #071018;
+            --bg-soft: #0b1620;
+            --card: rgba(17, 30, 42, .82);
+            --card-strong: #101e2a;
+            --green: #63f39a;
+            --green-strong: #42e77f;
+            --green-soft: rgba(99, 243, 154, .12);
+            --text: #f5f8fa;
+            --muted: #a6b4bf;
+            --muted-2: #728391;
+            --border: rgba(154, 183, 201, .14);
+            --radius: 22px;
+            --max: 1180px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 16px;
-        }
-
-        .max-w-6xl {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .mx-auto {
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .px-4 {
-            padding-left: 16px;
-            padding-right: 16px;
-        }
-
-        .text-3xl {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .text-2xl {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .font-bold {
-            font-weight: 700;
-        }
-
-        .mb-6 {
-            margin-bottom: 24px;
-        }
-
-        .grid {
-            display: grid;
-        }
-
-        .grid-cols-1 {
-            grid-template-columns: 1fr;
-        }
-
-        .gap-6 {
-            gap: 24px;
-        }
-
-        /* Header */
-        header {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-            padding: 32px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .header-title h1 {
-            font-size: 32px;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 16px;
-        }
-
-        .header-title p {
-            color: var(--text-secondary);
-            font-size: 15px;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 82% 7%, rgba(72, 242, 139, .12), transparent 28%),
+                radial-gradient(circle at 8% 34%, rgba(35, 120, 93, .12), transparent 25%),
+                linear-gradient(180deg, #071018 0%, #08131d 45%, #071018 100%);
+            color: var(--text);
             line-height: 1.6;
-            margin-bottom: 24px;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .header-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: rgba(0, 230, 118, 0.1);
-            color: var(--accent-green);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            width: fit-content;
-            margin-bottom: 16px;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .25;
+            background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, black, transparent 75%);
         }
 
-        .header-cta {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        a { color: inherit; }
+        img { max-width: 100%; }
+        .container { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 24px;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 15px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            min-height: 46px;
+            padding: 0 20px;
+            border-radius: 14px;
+            border: 1px solid transparent;
             text-decoration: none;
-            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
         }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--green); color: #07110c; box-shadow: 0 10px 30px rgba(99,243,154,.18); }
+        .btn-primary:hover { background: var(--green-strong); box-shadow: 0 14px 34px rgba(99,243,154,.25); }
+        .btn-outline { color: var(--text); border-color: rgba(173,195,207,.22); background: rgba(255,255,255,.025); }
+        .btn-outline:hover { border-color: rgba(99,243,154,.5); background: var(--green-soft); }
 
-        .btn-primary {
-            background-color: var(--accent-green);
-            color: #121212;
-            box-shadow: 0 8px 24px rgba(0, 230, 118, 0.25);
-        }
-
-        .btn-primary:hover {
-            background-color: #00cc5f;
-            box-shadow: 0 12px 32px rgba(0, 230, 118, 0.35);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: var(--bg-card);
-            color: var(--accent-green);
-            border: 2px solid var(--accent-green);
-        }
-
-        .btn-secondary:hover {
-            background-color: rgba(0, 230, 118, 0.1);
-            transform: translateY(-2px);
-        }
-
-        /* Hero Grid */
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .hero-card {
+        /* Hero */
+        .hero {
             position: relative;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            aspect-ratio: 1;
-            min-height: 200px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .hero-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .hero-card-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(180deg, transparent 0%, rgba(18, 18, 18, 0.8) 50%, rgba(18, 18, 18, 0.95) 100%);
-            padding: 20px;
-        }
-
-        .hero-card-badge {
-            display: inline-flex;
-            background: rgba(0, 230, 118, 0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--accent-green);
-        }
-
-        .hero-card h2 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-top: 12px;
-        }
-
-        /* Features */
-        .features-section {
-            margin-top: 48px;
-        }
-
-        .features-grid {
+            min-height: 570px;
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .feature-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .feature-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-
-        .feature-card-body {
-            padding: 20px;
-        }
-
-        .feature-card h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .feature-card p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent-green);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 230, 118, 0.12);
-        }
-
-        /* Stats */
-        .stats-section {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 32px 20px;
-            margin-top: 48px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 24px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--accent-green);
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* Programs */
-        .programs-section {
-            margin-top: 48px;
-        }
-
-        .programs-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .program-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .program-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
-
-        .program-card h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .program-card p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 16px;
-        }
-
-        .program-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .program-item {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .program-card:hover {
-            border-color: var(--accent-green);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 230, 118, 0.12);
-        }
-
-        /* Challenges */
-        .challenges-section {
-            margin-top: 48px;
-        }
-
-        .challenges-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .challenge-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .challenge-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .challenge-description {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-        }
-
-        .challenge-footer {
-            display: flex;
-            justify-content: space-between;
+            grid-template-columns: 1fr 1.05fr;
             align-items: center;
+            gap: 58px;
+            padding: 72px 0 76px;
         }
 
-        .challenge-badge {
-            background-color: var(--accent-green);
-            color: #121212;
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 430px;
+            height: 430px;
+            right: -180px;
+            top: 40px;
+            background: rgba(71, 238, 135, .08);
+            filter: blur(70px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border: 1px solid rgba(99,243,154,.18);
+            border-radius: 999px;
+            color: var(--green);
+            background: var(--green-soft);
             font-size: 12px;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 12px;
-        }
-
-        .challenge-participants {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* Testimonials */
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .testimonial-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid var(--border-color);
-        }
-
-        .testimonial-rating {
-            margin-bottom: 12px;
-        }
-
-        .testimonial-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 16px;
-            font-style: italic;
-        }
-
-        .testimonial-author {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .testimonial-role {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        /* Benefits */
-        .benefits-section {
-            margin-top: 48px;
-        }
-
-        .benefits-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            border: 1px solid var(--border-color);
-        }
-
-        .benefits-title {
-            font-size: 20px;
             font-weight: 700;
             margin-bottom: 20px;
         }
 
-        .benefits-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
 
-        .benefits-item {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .benefits-icon {
-            font-size: 24px;
-        }
-
-        .benefits-item-title {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .benefits-item-desc {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* CTA */
-        .cta-section {
-            background: linear-gradient(135deg, rgba(0, 230, 118, 0.1) 0%, rgba(0, 230, 118, 0.05) 100%);
-            border: 1px solid rgba(0, 230, 118, 0.2);
-            border-radius: var(--radius-lg);
-            padding: 32px 20px;
-            margin-top: 48px;
-            text-align: center;
-        }
-
-        .cta-title {
-            font-size: 28px;
+        .hero h1 {
+            max-width: 620px;
+            font-size: clamp(42px, 5.2vw, 70px);
+            line-height: .99;
+            letter-spacing: -3.5px;
             font-weight: 800;
-            margin-bottom: 12px;
         }
+        .hero h1 span { color: var(--green); }
+        .hero-copy { max-width: 570px; color: var(--muted); font-size: 17px; margin: 24px 0 30px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
-        .cta-description {
-            color: var(--text-secondary);
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 24px;
+        .hero-visual {
+            position: relative;
+            height: 430px;
         }
-
-        .cta-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        /* Footer */
-        footer {
-            border-top: 1px solid var(--border-color);
-            padding: 32px 0;
-            margin-top: 48px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 32px;
-            margin-bottom: 32px;
-        }
-
-        .footer-column h4 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-column p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .footer-links {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .footer-link {
-            font-size: 13px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-link:hover {
-            color: var(--accent-green);
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(18, 18, 18, 0.98);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 16px;
-            z-index: 50;
-        }
-
-        .bottom-nav a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 10px 14px;
-            border-radius: 15px;
-            background-color: rgba(255, 255, 255, 0.04);
-            transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
-        }
-
-        .bottom-nav a:hover {
-            color: #ffffff;
-            background-color: rgba(0, 230, 118, 0.14);
-            transform: translateY(-1px);
-        }
-
-        .leaderboard-section {
-            margin-top: 48px;
-        }
-
-        .leaderboard-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
+        .hero-image {
+            position: absolute;
             overflow: hidden;
-            padding: 0;
+            border: 1px solid rgba(159, 220, 186, .3);
+            border-radius: 24px;
+            box-shadow: 0 28px 70px rgba(0,0,0,.35);
+            background: #14222e;
+        }
+        .hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .45s ease; }
+        .hero-image:hover img { transform: scale(1.045); }
+        .hero-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(3,8,12,.45)); }
+        .hero-image.one { width: 57%; height: 350px; left: 3%; top: 34px; transform: rotate(-2deg); }
+        .hero-image.two { width: 38%; height: 195px; right: 1%; top: 8px; transform: rotate(2deg); }
+        .hero-image.three { width: 38%; height: 190px; right: 4%; bottom: 5px; transform: rotate(-1deg); }
+        .image-label {
+            position: absolute;
+            left: 14px;
+            bottom: 14px;
+            z-index: 2;
+            padding: 7px 10px;
+            border-radius: 10px;
+            background: rgba(6,14,20,.7);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        .leaderboard-row {
+        /* Sections */
+        .section { padding: 54px 0; }
+        .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 24px; }
+        .section-kicker { color: var(--green); text-transform: uppercase; letter-spacing: .16em; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
+        .section-title { font-size: clamp(28px, 3vw, 42px); line-height: 1.1; letter-spacing: -1.5px; }
+        .section-description { max-width: 560px; color: var(--muted); font-size: 14px; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .feature-card, .program-card, .challenge-card, .testimonial-card, .benefits-card, .contact-card {
+            border: 1px solid var(--border);
+            background: linear-gradient(145deg, rgba(18,32,44,.92), rgba(10,21,30,.82));
+            border-radius: var(--radius);
+            box-shadow: 0 16px 45px rgba(0,0,0,.13);
+        }
+        .feature-card { padding: 22px; min-height: 205px; transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+        .feature-card:hover, .program-card:hover, .challenge-card:hover { transform: translateY(-4px); border-color: rgba(99,243,154,.35); box-shadow: 0 20px 50px rgba(0,0,0,.22); }
+        .feature-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; background: var(--green-soft); color: var(--green); font-size: 22px; margin-bottom: 24px; }
+        .feature-card h3, .program-card h3 { font-size: 17px; margin-bottom: 8px; }
+        .feature-card p, .program-card p, .challenge-description, .testimonial-text, .benefits-item-desc { color: var(--muted); font-size: 13px; }
+
+        .programs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .program-card { padding: 26px; transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+        .program-icon { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 16px; background: rgba(99,243,154,.1); font-size: 25px; margin-bottom: 20px; }
+        .program-list { display: grid; gap: 9px; margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--border); }
+        .program-item { color: #c8d4dc; font-size: 12px; }
+        .program-item::first-letter { color: var(--green); }
+
+        .challenge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .challenge-card { padding: 25px; transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+        .challenge-top { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .challenge-title { font-size: 17px; font-weight: 700; }
+        .challenge-badge { color: var(--green); background: var(--green-soft); padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+        .challenge-button { margin-top: 20px; display: inline-flex; color: var(--green); text-decoration: none; font-size: 13px; font-weight: 700; }
+
+        .stats {
+            margin: 30px 0 10px;
             display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
-            gap: 16px;
-            padding: 16px 20px;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-        }
-
-        .leaderboard-row.header {
-            background-color: rgba(0, 230, 118, 0.05);
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 700;
-        }
-
-        .leaderboard-row:last-child {
-            border-bottom: none;
-        }
-
-        .leaderboard-rank {
-            color: var(--accent-green);
-            font-weight: 700;
-        }
-
-        .challenge-card {
-            background-color: var(--bg-card);
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            background: rgba(16,30,42,.65);
+            overflow: hidden;
         }
+        .stat { padding: 25px; text-align: center; border-right: 1px solid var(--border); }
+        .stat:last-child { border-right: 0; }
+        .stat-number { font-size: 30px; font-weight: 800; color: var(--green); letter-spacing: -1px; }
+        .stat-label { color: var(--muted-2); font-size: 12px; margin-top: 4px; }
 
-        .challenge-card:hover {
-            border-color: var(--accent-green);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(0, 230, 118, 0.08);
-        }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .testimonial-card { padding: 24px; }
+        .rating { color: #ffd166; letter-spacing: 2px; font-size: 12px; margin-bottom: 17px; }
+        .testimonial-text { font-style: italic; line-height: 1.75; margin-bottom: 20px; }
+        .testimonial-author { font-size: 13px; font-weight: 700; }
+        .testimonial-role { color: var(--muted-2); font-size: 11px; margin-top: 3px; }
 
-        .challenge-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 16px;
-            padding: 12px 18px;
-            border-radius: 15px;
-            border: 1px solid var(--border-color);
-            background-color: rgba(0, 230, 118, 0.08);
-            color: var(--accent-green);
-            font-size: 14px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: background-color 0.25s ease, transform 0.25s ease;
-        }
+        .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .benefits-card { padding: 28px; }
+        .benefits-card h3 { font-size: 20px; margin-bottom: 20px; }
+        .benefits-list { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .benefits-item { display: flex; gap: 11px; align-items: flex-start; }
+        .benefits-icon { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 10px; background: var(--green-soft); }
+        .benefits-item-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
 
-        .challenge-button:hover {
-            background-color: rgba(0, 230, 118, 0.16);
-            transform: translateY(-1px);
-        }
-
-        .contact-section {
-            margin-top: 48px;
-        }
-
-        .contact-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .contact-header {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .contact-label {
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            font-size: 12px;
-            color: var(--accent-green);
-            font-weight: 700;
-        }
-
-        .contact-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .contact-body {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 18px;
-        }
-
-        .contact-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .contact-item-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .contact-item p {
-            color: #ffffff;
-            font-size: 15px;
-        }
-
-        .social-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .social-btn {
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            padding: 10px 18px;
-            background-color: rgba(255,255,255,0.05);
-            color: #ffffff;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
-        .social-btn:hover {
-            background-color: rgba(0, 230, 118, 0.12);
-            border-color: var(--accent-green);
-        }
-
-        .social-btn-instagram {
-            color: #f56040;
-            border-color: rgba(245, 96, 64, 0.4);
-        }
-
-        .social-btn-tiktok {
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.25);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid var(--border-color);
-            padding-top: 24px;
+        .cta {
+            position: relative;
+            overflow: hidden;
+            margin: 54px 0;
+            padding: 58px 30px;
             text-align: center;
-            font-size: 12px;
-            color: var(--text-tertiary);
+            border: 1px solid rgba(99,243,154,.2);
+            border-radius: 28px;
+            background: radial-gradient(circle at 50% 0%, rgba(99,243,154,.14), transparent 55%), linear-gradient(145deg, rgba(15,36,46,.95), rgba(9,22,31,.95));
+        }
+        .cta h2 { font-size: clamp(30px, 4vw, 48px); letter-spacing: -2px; line-height: 1.05; margin-bottom: 14px; }
+        .cta p { max-width: 620px; margin: 0 auto 25px; color: var(--muted); font-size: 14px; }
+        .cta-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+        .contact-card { padding: 28px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 30px; }
+        .contact-label { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 8px; }
+        .contact-title { font-size: 28px; letter-spacing: -1px; margin-bottom: 10px; }
+        .contact-copy { color: var(--muted); font-size: 13px; }
+        .contact-info { display: grid; gap: 15px; }
+        .contact-item { padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.02); }
+        .contact-item strong { display: block; font-size: 12px; margin-bottom: 4px; color: #d7e1e7; }
+        .contact-item span { color: var(--muted); font-size: 13px; }
+
+        footer { padding: 42px 0 20px; border-top: 1px solid var(--border); margin-top: 55px; }
+        .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 35px; }
+        .footer-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+        .footer-column h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 14px; }
+        .footer-column p, .footer-link { color: var(--muted-2); font-size: 12px; line-height: 1.7; }
+        .footer-links { display: grid; gap: 7px; }
+        .footer-link { text-decoration: none; transition: color .2s ease; }
+        .footer-link:hover { color: var(--green); }
+        .footer-bottom { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted-2); font-size: 11px; text-align: center; }
+
+        @media (max-width: 760px) {
+            .container { width: min(var(--max), calc(100% - 28px)); }
+            .hero { min-height: auto; padding: 48px 0 35px; }
+            .hero h1 { font-size: clamp(40px, 12vw, 58px); letter-spacing: -2.5px; }
+            .hero-copy { font-size: 15px; }
+            .hero-visual { height: 370px; }
+            .hero-image.one { width: 57%; height: 305px; }
+            .hero-image.two { width: 40%; height: 170px; }
+            .hero-image.three { width: 40%; height: 165px; }
+            .features-grid, .programs-grid, .testimonials-grid, .benefits-grid, .challenge-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .stat:nth-child(2) { border-right: 0; }
+            .stat:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+            .benefits-list { grid-template-columns: 1fr; }
+            .contact-card { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-grid .footer-column:first-child { grid-column: 1 / -1; }
         }
 
-        /* Responsive Tablet */
-        @media (min-width: 640px) {
-            .hero-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .programs-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .challenges-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .testimonials-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .footer-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .cta-buttons {
-                flex-direction: row;
-                justify-content: center;
-            }
-        }
-
-        /* Responsive Desktop */
-        @media (min-width: 1024px) {
-            header {
-                flex-direction: row;
-                gap: 48px;
-            }
-
-            .header-title {
-                flex: 1;
-            }
-
-            .header-title h1 {
-                font-size: 40px;
-            }
-
-            .hero-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .features-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .programs-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .challenges-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .testimonials-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .footer-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
+        @media (max-width: 480px) {
+            .container { width: min(var(--max), calc(100% - 22px)); }
+            .hero-actions .btn { width: 100%; }
+            .hero-visual { height: 310px; }
+            .hero-image.one { width: 59%; height: 255px; left: 0; }
+            .hero-image.two { width: 41%; height: 145px; right: 0; }
+            .hero-image.three { width: 41%; height: 138px; right: 0; bottom: 0; }
+            .section { padding: 38px 0; }
+            .section-heading { display: block; }
+            .section-description { margin-top: 10px; }
+            .stats { margin-top: 20px; }
+            .stat { padding: 19px 8px; }
+            .stat-number { font-size: 25px; }
+            .challenge-top { align-items: flex-start; flex-direction: column; }
+            .cta { padding: 42px 18px; }
+            .cta-actions .btn { width: 100%; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-grid .footer-column:last-child { display: block; }
         }
     </style>
 </head>
 <body>
-    <div class="max-w-6xl mx-auto px-4">
-        <!-- Header -->
-        <header>
-            <div class="header-title">
-                <span class="header-badge">🎯 Fit Work</span>
-                <h1>Una plataforma moderna para activar tu cuerpo y tu mente</h1>
-                <p>Encuentra rutinas cortas, desafíos diarios y contenido visual inspirador pensado para estudiantes que quieren ejercitarse sin perder el ritmo de sus estudios.</p>
-                <div class="header-cta">
-                    <a href="login.html" class="btn btn-primary">Iniciar sesión</a>
-                    <a href="registro.html" class="btn btn-secondary">Crear cuenta</a>
+    <main class="container">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-copy-block">
+                <div class="eyebrow"><span class="eyebrow-dot"></span> Tu progreso, nuestra meta</div>
+                <h1 id="hero-title">Entrena hoy,<br><span>mejora mañana.</span></h1>
+                <p class="hero-copy">FITWORK te ayuda a mantenerte activo mientras estudias. Encuentra rutinas, desafíos y herramientas para convertir pequeños momentos en progreso real.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="registro.html">Comenzar ahora&nbsp; →</a>
+                    <a class="btn btn-outline" href="#como-funciona">▷&nbsp; Ver cómo funciona</a>
                 </div>
             </div>
-            <div class="hero-grid">
-                <div class="hero-card">
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80" alt="Estudiante haciendo ejercicio">
-                    <div class="hero-card-content">
-                        <span class="hero-card-badge">Motivación</span>
-                        <h2>Entrena entre clases</h2>
-                    </div>
-                </div>
-                <div class="hero-card">
-                    <img src="https://images.unsplash.com/photo-1526401485004-8dd4e3deb7db?auto=format&fit=crop&w=800&q=80" alt="Grupo de estudiantes activos">
-                    <div class="hero-card-content">
-                        <span class="hero-card-badge">Comunidad</span>
-                        <h2>Comparte tus logros</h2>
-                    </div>
-                </div>
-                <div class="hero-card">
-                    <img src="https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?auto=format&fit=crop&w=800&q=80" alt="Persona usando app fitness">
-                    <div class="hero-card-content">
-                        <span class="hero-card-badge">Digital</span>
-                        <h2>Diseñado para estudiantes</h2>
-                    </div>
-                </div>
-            </div>
-        </header>
 
-        <!-- Características principales -->
-        <section class="features-section">
-            <h2 class="text-3xl font-bold mb-6">Características principales</h2>
+            <div class="hero-visual" aria-label="Galería de FITWORK">
+                <div class="hero-image one">
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1000&q=85" alt="Persona entrenando con pesas">
+                    <span class="image-label">Entrenamiento</span>
+                </div>
+                <div class="hero-image two">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=85" alt="Persona realizando ejercicio">
+                    <span class="image-label">Energía</span>
+                </div>
+                <div class="hero-image three">
+                    <img src="https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?auto=format&fit=crop&w=800&q=85" alt="Actividad física y bienestar">
+                    <span class="image-label">Bienestar</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="progreso" aria-labelledby="features-title">
+            <div class="section-heading">
+                <div>
+                    <div class="section-kicker">Todo en un solo lugar</div>
+                    <h2 class="section-title" id="features-title">Herramientas para mantenerte en movimiento</h2>
+                </div>
+                <p class="section-description">Una experiencia sencilla para organizar tus entrenamientos, mantener la motivación y visualizar tus avances.</p>
+            </div>
             <div class="features-grid">
-                <div class="feature-card">
-                    <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" alt="Caminata activa">
-                    <div class="feature-card-body">
-                        <h3>Mini rutinas</h3>
-                        <p>Sesiones fáciles de realizar en cualquier momento, incluso entre clases o entre estudios.</p>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <img src="https://images.unsplash.com/photo-1526401281623-2d7d9f2d158f?auto=format&fit=crop&w=800&q=80" alt="Ejercicio con amigos">
-                    <div class="feature-card-body">
-                        <h3>Retos semanales</h3>
-                        <p>Supera metas claras y suma progresos con una experiencia visual que te inspira cada día.</p>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <img src="https://images.unsplash.com/photo-1540206395-68808572332f?auto=format&fit=crop&w=800&q=80" alt="Estudiante relajado">
-                    <div class="feature-card-body">
-                        <h3>Bienestar total</h3>
-                        <p>Mejora tu energía, reduce el estrés y encuentra un equilibrio real entre estudio y ejercicio.</p>
-                    </div>
-                </div>
+                <article class="feature-card"><div class="feature-icon">🏋</div><h3>Rutinas personalizadas</h3><p>Planes adaptados a tus objetivos, nivel y tiempo disponible.</p></article>
+                <article class="feature-card"><div class="feature-icon">📈</div><h3>Seguimiento de progreso</h3><p>Visualiza tus avances y mantén una referencia clara de tu evolución.</p></article>
+                <article class="feature-card"><div class="feature-icon">⚡</div><h3>Más energía</h3><p>Convierte sesiones cortas en hábitos que acompañen tu día a día.</p></article>
+                <article class="feature-card"><div class="feature-icon">♥</div><h3>Vida más saludable</h3><p>Encuentra un equilibrio entre entrenamiento, estudio y bienestar.</p></article>
+            </div>
+
+            <div class="stats" aria-label="Estadísticas de la plataforma">
+                <div class="stat"><div class="stat-number">15+</div><div class="stat-label">minutos por rutina</div></div>
+                <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">acceso a la plataforma</div></div>
+                <div class="stat"><div class="stat-number">3</div><div class="stat-label">tipos de entrenamiento</div></div>
+                <div class="stat"><div class="stat-number">100%</div><div class="stat-label">enfocado en estudiantes</div></div>
             </div>
         </section>
 
-        <!-- Programas de entrenamiento -->
-        <section class="programs-section">
-            <h2 class="text-3xl font-bold mb-6">Programas de entrenamiento</h2>
+        <section class="section" id="programas" aria-labelledby="programs-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Entrenamientos</div><h2 class="section-title" id="programs-title">Elige cómo quieres entrenar</h2></div>
+                <p class="section-description">Programas fáciles de entender para distintos objetivos y momentos del día.</p>
+            </div>
             <div class="programs-grid">
-                <div class="program-card">
-                    <div class="program-icon">💪</div>
-                    <h3>Fuerza y resistencia</h3>
-                    <p>Rutinas diseñadas para fortalecer tu cuerpo, mejorar tu resistencia cardiovascular y tonificar músculos.</p>
-                    <div class="program-list">
-                        <div class="program-item">✓ 15-30 min por sesión</div>
-                        <div class="program-item">✓ Sin equipamiento necesario</div>
-                        <div class="program-item">✓ Progresión semanal</div>
-                    </div>
-                </div>
-                <div class="program-card">
-                    <div class="program-icon">🧘</div>
-                    <h3>Flexibilidad y yoga</h3>
-                    <p>Mejora tu flexibilidad, reduce tensiones y encuentra paz mental con sesiones de yoga y estiramiento.</p>
-                    <div class="program-list">
-                        <div class="program-item">✓ 10-20 min por sesión</div>
-                        <div class="program-item">✓ Relajación y bienestar</div>
-                        <div class="program-item">✓ Reduce el estrés</div>
-                    </div>
-                </div>
-                <div class="program-card">
-                    <div class="program-icon">🏃</div>
-                    <h3>Cardio intenso</h3>
-                    <p>Entrena tu corazón con rutinas de alto impacto que aceleran tu metabolismo y queman calorías.</p>
-                    <div class="program-list">
-                        <div class="program-item">✓ 20-40 min por sesión</div>
-                        <div class="program-item">✓ Quemagrasas efectivo</div>
-                        <div class="program-item">✓ Aumenta energía</div>
-                    </div>
-                </div>
+                <article class="program-card"><div class="program-icon">💪</div><h3>Fuerza y resistencia</h3><p>Fortalece tu cuerpo con sesiones progresivas y prácticas.</p><div class="program-list"><div class="program-item">✓ 15–30 min por sesión</div><div class="program-item">✓ Sin equipamiento necesario</div><div class="program-item">✓ Progresión semanal</div></div></article>
+                <article class="program-card"><div class="program-icon">🧘</div><h3>Flexibilidad y yoga</h3><p>Sesiones para movilidad, estiramiento y recuperación.</p><div class="program-list"><div class="program-item">✓ 10–20 min por sesión</div><div class="program-item">✓ Relajación y movilidad</div><div class="program-item">✓ Ideal para pausas</div></div></article>
+                <article class="program-card"><div class="program-icon">🏃</div><h3>Cardio intenso</h3><p>Rutinas dinámicas para elevar tu ritmo y trabajar resistencia.</p><div class="program-list"><div class="program-item">✓ 20–40 min por sesión</div><div class="program-item">✓ Alta intensidad opcional</div><div class="program-item">✓ Aumenta tu energía</div></div></article>
             </div>
         </section>
 
-        <!-- Desafíos físicos reales -->
-        <section class="challenges-section" id="desafios">
-            <h2 class="text-3xl font-bold mb-6">Desafíos físicos reales</h2>
-            <div class="challenges-grid">
-                <div class="challenge-card">
-                    <div class="challenge-title">🏃 Reto de Resistencia</div>
-                    <div class="challenge-description">Realiza 20 vueltas a la cancha de fútbol del colegio en un solo entrenamiento.</div>
-                    <a href="#" class="challenge-button">Completar</a>
-                </div>
-                <div class="challenge-card">
-                    <div class="challenge-title">💪 Reto de Fuerza</div>
-                    <div class="challenge-description">Haz una rutina de flexiones en las barras del gimnasio escolar manteniendo buena técnica.</div>
-                    <a href="#" class="challenge-button">Completar</a>
-                </div>
+        <section class="section" id="desafios" aria-labelledby="challenges-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Desafíos</div><h2 class="section-title" id="challenges-title">Pequeños retos, grandes avances</h2></div>
+                <p class="section-description">Desafíos físicos pensados para que puedas convertir tu actividad en una experiencia más dinámica.</p>
+            </div>
+            <div class="challenge-grid">
+                <article class="challenge-card"><div class="challenge-top"><div class="challenge-title">🏃 Reto de resistencia</div><span class="challenge-badge">20 vueltas</span></div><p class="challenge-description">Completa el recorrido establecido en un solo entrenamiento y registra tu avance.</p><a class="challenge-button" href="desafios.html">Ver desafío →</a></article>
+                <article class="challenge-card"><div class="challenge-top"><div class="challenge-title">💪 Reto de fuerza</div><span class="challenge-badge">Técnica</span></div><p class="challenge-description">Completa una rutina de fuerza manteniendo una técnica controlada y consistente.</p><a class="challenge-button" href="desafios.html">Ver desafío →</a></article>
             </div>
         </section>
 
-        <!-- Ranking de estudiantes -->
-        <section class="leaderboard-section" id="ranking">
-            <h2 class="text-3xl font-bold mb-6">Ranking de estudiantes</h2>
-            <div class="leaderboard-card">
-                <div class="leaderboard-row header">
-                    <span>Posición</span>
-                    <span>Estudiante</span>
-                    <span>Puntos</span>
-                </div>
-                <div class="leaderboard-row">
-                    <span class="leaderboard-rank">1</span>
-                    <span>Jerónimo</span>
-                    <span>350 pts</span>
-                </div>
-                <div class="leaderboard-row">
-                    <span class="leaderboard-rank">2</span>
-                    <span>Brayan</span>
-                    <span>310 pts</span>
-                </div>
-                <div class="leaderboard-row">
-                    <span class="leaderboard-rank">3</span>
-                    <span>Sofía</span>
-                    <span>290 pts</span>
-                </div>
+        <section class="section" id="como-funciona" aria-labelledby="how-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Paso a paso</div><h2 class="section-title" id="how-title">¿Cómo funciona?</h2></div>
+                <p class="section-description">Empieza en pocos pasos y utiliza FITWORK a tu ritmo.</p>
+            </div>
+            <div class="features-grid">
+                <article class="feature-card"><div class="feature-icon">01</div><h3>Crea tu cuenta</h3><p>Regístrate y configura la información básica para comenzar.</p></article>
+                <article class="feature-card"><div class="feature-icon">02</div><h3>Elige tu plan</h3><p>Selecciona el tipo de entrenamiento que más se adapta a ti.</p></article>
+                <article class="feature-card"><div class="feature-icon">03</div><h3>Entrena</h3><p>Completa tus sesiones y desafíos desde cualquier dispositivo.</p></article>
+                <article class="feature-card"><div class="feature-icon">04</div><h3>Mide tu progreso</h3><p>Consulta tus avances y continúa construyendo tu hábito.</p></article>
             </div>
         </section>
 
-        <!-- Testimonios -->
-        <section class="challenges-section">
-            <h2 class="text-3xl font-bold mb-6">Lo que dicen nuestros usuarios</h2>
+        <section class="section" aria-labelledby="testimonials-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Comunidad</div><h2 class="section-title" id="testimonials-title">Experiencias de estudiantes</h2></div>
+            </div>
             <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">"Fit Work cambió mi vida. Antes no tenía tiempo para hacer ejercicio, ahora hago 15 minutos entre clases y me siento increíble"</p>
-                    <div class="testimonial-author">María Rodríguez</div>
-                    <div class="testimonial-role">Estudiante de Ingeniería</div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">"La comunidad es lo mejor. Ver a otros estudiantes motivándose mutuamente me impulsa a seguir adelante cada día"</p>
-                    <div class="testimonial-author">Carlos Mendez</div>
-                    <div class="testimonial-role">Estudiante de Administración</div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">"Los desafíos semanales me mantienen comprometida. He perdido 5 kg en 3 meses sin dejar de estudiar"</p>
-                    <div class="testimonial-author">Sofia González</div>
-                    <div class="testimonial-role">Estudiante de Medicina</div>
-                </div>
+                <article class="testimonial-card"><div class="rating">★★★★★</div><p class="testimonial-text">“Ahora puedo hacer una rutina corta entre clases sin sentir que tengo que organizar todo el día alrededor del ejercicio.”</p><div class="testimonial-author">María Rodríguez</div><div class="testimonial-role">Estudiante de Ingeniería</div></article>
+                <article class="testimonial-card"><div class="rating">★★★★★</div><p class="testimonial-text">“Los desafíos hacen que entrenar sea más dinámico y me ayudan a mantener una rutina.”</p><div class="testimonial-author">Carlos Méndez</div><div class="testimonial-role">Estudiante de Administración</div></article>
+                <article class="testimonial-card"><div class="rating">★★★★★</div><p class="testimonial-text">“Me gusta poder ver mis avances y tener sesiones que se ajustan al tiempo que tengo disponible.”</p><div class="testimonial-author">Sofía González</div><div class="testimonial-role">Estudiante de Medicina</div></article>
             </div>
         </section>
 
-        <!-- Beneficios -->
-        <section class="benefits-section">
-            <div class="grid grid-cols-1 gap-6">
-                <div class="benefits-card">
-                    <div class="benefits-title">✨ Beneficios para tu salud</div>
+        <section class="section" aria-labelledby="benefits-title">
+            <div class="benefits-grid">
+                <article class="benefits-card">
+                    <h3 id="benefits-title">✨ Beneficios para tu bienestar</h3>
                     <div class="benefits-list">
-                        <div class="benefits-item">
-                            <div class="benefits-icon">💚</div>
-                            <div>
-                                <div class="benefits-item-title">Sistema cardiovascular</div>
-                                <div class="benefits-item-desc">Fortalece tu corazón y circulación</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">🧠</div>
-                            <div>
-                                <div class="benefits-item-title">Concentración mental</div>
-                                <div class="benefits-item-desc">Mejora memoria y enfoque</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">⚡</div>
-                            <div>
-                                <div class="benefits-item-title">Energía aumentada</div>
-                                <div class="benefits-item-desc">Levanta tu ánimo y vitalidad</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">😌</div>
-                            <div>
-                                <div class="benefits-item-title">Menos estrés</div>
-                                <div class="benefits-item-desc">Reduce ansiedad diaria</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">💪</div>
-                            <div>
-                                <div class="benefits-item-title">Autoestima</div>
-                                <div class="benefits-item-desc">Aumenta confianza en ti mismo</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">😴</div>
-                            <div>
-                                <div class="benefits-item-title">Mejor sueño</div>
-                                <div class="benefits-item-desc">Duerme profundo y reparador</div>
-                            </div>
-                        </div>
+                        <div class="benefits-item"><div class="benefits-icon">💚</div><div><div class="benefits-item-title">Actividad cardiovascular</div><div class="benefits-item-desc">Integra movimiento a tu rutina.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">🧠</div><div><div class="benefits-item-title">Concentración</div><div class="benefits-item-desc">Incluye pausas activas durante el estudio.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">⚡</div><div><div class="benefits-item-title">Energía</div><div class="benefits-item-desc">Mantente activo con sesiones breves.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">😌</div><div><div class="benefits-item-title">Desconexión</div><div class="benefits-item-desc">Haz una pausa de tus actividades académicas.</div></div></div>
                     </div>
-                </div>
-                <div class="benefits-card">
-                    <div class="benefits-title">🚀 Por qué Fit Work</div>
+                </article>
+                <article class="benefits-card">
+                    <h3>🚀 ¿Por qué FITWORK?</h3>
                     <div class="benefits-list">
-                        <div class="benefits-item">
-                            <div class="benefits-icon">🎯</div>
-                            <div>
-                                <div class="benefits-item-title">Para estudiantes</div>
-                                <div class="benefits-item-desc">Diseñado específicamente para ti</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">📱</div>
-                            <div>
-                                <div class="benefits-item-title">Acceso total</div>
-                                <div class="benefits-item-desc">Desde cualquier dispositivo</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">🤝</div>
-                            <div>
-                                <div class="benefits-item-title">Comunidad activa</div>
-                                <div class="benefits-item-desc">Conecta con otros estudiantes</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">🎁</div>
-                            <div>
-                                <div class="benefits-item-title">Recompensas</div>
-                                <div class="benefits-item-desc">Gana logros y XP</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">📊</div>
-                            <div>
-                                <div class="benefits-item-title">Seguimiento</div>
-                                <div class="benefits-item-desc">Ve tu progreso en detalle</div>
-                            </div>
-                        </div>
-                        <div class="benefits-item">
-                            <div class="benefits-icon">🆓</div>
-                            <div>
-                                <div class="benefits-item-title">Contenido premium</div>
-                                <div class="benefits-item-desc">Acceso a todo desde el inicio</div>
-                            </div>
-                        </div>
+                        <div class="benefits-item"><div class="benefits-icon">🎯</div><div><div class="benefits-item-title">Pensado para estudiantes</div><div class="benefits-item-desc">Rutinas que consideran el tiempo disponible.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">📱</div><div><div class="benefits-item-title">Acceso desde cualquier dispositivo</div><div class="benefits-item-desc">Consulta la plataforma donde la necesites.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">🤝</div><div><div class="benefits-item-title">Comunidad</div><div class="benefits-item-desc">Comparte la experiencia con otros estudiantes.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">📊</div><div><div class="benefits-item-title">Seguimiento</div><div class="benefits-item-desc">Mantén una referencia de tus avances.</div></div></div>
                     </div>
-                </div>
+                </article>
             </div>
         </section>
 
-        <!-- CTA Final -->
-        <section class="cta-section">
-            <h2 class="cta-title">¿Listo para transformar tu vida?</h2>
-            <p class="cta-description">Únete a miles de estudiantes que ya están mejorando su salud y aumentando su energía con Fit Work. El primer paso comienza hoy.</p>
-            <div class="cta-buttons">
-                <a href="registro.html" class="btn btn-primary">Registrarme ahora</a>
-                <a href="login.html" class="btn btn-secondary">Ya tengo cuenta</a>
-            </div>
+        <section class="cta" aria-labelledby="cta-title">
+            <div class="section-kicker">Empieza hoy</div>
+            <h2 id="cta-title">Tu próximo entrenamiento comienza aquí.</h2>
+            <p>Construye una rutina que se adapte a tu vida de estudiante y avanza paso a paso con FITWORK.</p>
+            <div class="cta-actions"><a class="btn btn-primary" href="registro.html">Registrarme ahora</a><a class="btn btn-outline" href="login.html">Ya tengo cuenta</a></div>
         </section>
 
-        <!-- Contacto e Equipo -->
-        <section class="contact-section">
+        <section class="section" id="contacto" aria-labelledby="contact-title">
             <div class="contact-card">
-                <div class="contact-header">
-                    <div>
-                        <p class="contact-label">Equipo de Desarrollo</p>
-                        <h2 class="contact-title">Sofía, Jerónimo y Brayan</h2>
-                    </div>
+                <div>
+                    <div class="contact-label">Equipo de desarrollo</div>
+                    <h2 class="contact-title" id="contact-title">Sofía, Jerónimo y Brayan</h2>
+                    <p class="contact-copy">FITWORK es una propuesta enfocada en facilitar la actividad física dentro de la rutina estudiantil.</p>
                 </div>
-                <div class="contact-body">
-                    <div class="contact-item">
-                        <span class="contact-item-title">Contacto institucional</span>
-                        <p>ruasofia@iemab.edu.co</p>
-                    </div>
-                    <div class="contact-item">
-                        <span class="contact-item-title">Redes sociales</span>
-                        <div class="social-buttons">
-                            <button class="social-btn social-btn-instagram">Instagram</button>
-                            <button class="social-btn social-btn-tiktok">TikTok</button>
-                        </div>
-                    </div>
+                <div class="contact-info">
+                    <div class="contact-item"><strong>Contacto institucional</strong><span>ruasofia@iemab.edu.co</span></div>
+                    <div class="contact-item"><strong>Redes sociales</strong><span>Instagram · TikTok</span></div>
                 </div>
             </div>
         </section>
+    </main>
 
-        <!-- Footer -->
-        <footer>
+    <footer>
+        <div class="container">
             <div class="footer-grid">
-                <div class="footer-column">
-                    <h4>Fit Work</h4>
-                    <p>La plataforma de fitness diseñada para estudiantes activos que quieren mejorar su salud sin sacrificar sus estudios.</p>
-                </div>
-                <div class="footer-column">
-                    <h4>Programa</h4>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">Entrenamientos</a>
-                        <a href="#" class="footer-link">Desafíos</a>
-                        <a href="#" class="footer-link">Comunidad</a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h4>Compañía</h4>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">Sobre nosotros</a>
-                        <a href="#" class="footer-link">Contacto</a>
-                        <a href="#" class="footer-link">Blog</a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h4>Síguenos</h4>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">Instagram</a>
-                        <a href="#" class="footer-link">Twitter</a>
-                        <a href="#" class="footer-link">YouTube</a>
-                    </div>
-                </div>
+                <div class="footer-column"><div class="footer-title">FIT<span style="color:var(--green)">WORK</span></div><p>La plataforma de fitness diseñada para estudiantes que quieren integrar movimiento, entrenamiento y bienestar a su rutina.</p></div>
+                <div class="footer-column"><h4>Programa</h4><div class="footer-links"><a class="footer-link" href="#programas">Entrenamientos</a><a class="footer-link" href="desafios.html">Desafíos</a><a class="footer-link" href="#progreso">Progreso</a></div></div>
+                <div class="footer-column"><h4>Cuenta</h4><div class="footer-links"><a class="footer-link" href="login.html">Iniciar sesión</a><a class="footer-link" href="registro.html">Crear cuenta</a><a class="footer-link" href="panel.html">Panel</a></div></div>
+                <div class="footer-column"><h4>Comunidad</h4><div class="footer-links"><a class="footer-link" href="desafios.html">Desafíos</a><a class="footer-link" href="#contacto">Contacto</a><a class="footer-link" href="#como-funciona">Cómo funciona</a></div></div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Fit Work. Todos los derechos reservados. | <a href="#" class="footer-link">Privacidad</a> | <a href="#" class="footer-link">Términos</a></p>
-            </div>
-        </footer>
-    </div>
-    <nav class="bottom-nav">
-        <a href="index.html">🏠 Inicio</a>
-        <a href="desafios.html">🎯 Desafíos</a>
-        <a href="ranking.html">🏆 Ranking</a>
-    </nav>
+            <div class="footer-bottom">© 2026 FITWORK. Todos los derechos reservados.</div>
+        </div>
+    </footer>
 </body>
 </html>

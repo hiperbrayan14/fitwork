@@ -1,166 +1,370 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="./dist/styles.css">
-    <style>
-        body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-        .bg-gradient-to-br { background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
-        .from-indigo-500, .to-purple-600 { background: transparent; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-center { justify-content: center; }
-        .h-screen { min-height: 100vh; }
-        .bg-white { background-color: #ffffff; }
-        .p-8 { padding: 2rem; }
-        .rounded-2xl { border-radius: 1rem; }
-        .shadow-2xl { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); }
-        .w-96 { width: 24rem; max-width: 100%; }
-        .transform { transform: translateZ(0); }
-        .transition-all { transition: all 0.2s ease; }
-        .hover\:scale-105:hover { transform: scale(1.05); }
-        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; font-weight: 800; }
-        .font-extrabold { font-weight: 800; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .text-center { text-align: center; }
-        .text-gray-800 { color: #1f2937; }
-        .space-y-4 > * + * { margin-top: 1rem; }
-        .block { display: block; }
-        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-        .font-medium { font-weight: 500; }
-        .text-gray-700 { color: #374151; }
-        .mb-1 { margin-bottom: 0.25rem; }
-        .w-full { width: 100%; }
-        .p-3 { padding: 0.75rem; }
-        .border { border-width: 1px; border-style: solid; border-color: #d1d5db; }
-        .border-gray-300 { border-color: #d1d5db; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .outline-none { outline: none; }
-        .bg-indigo-600 { background-color: #4f46e5; }
-        .hover\:bg-indigo-700:hover { background-color: #4338ca; }
-        .text-white { color: #ffffff; }
-        .font-bold { font-weight: 700; }
-        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
-        .hover\:shadow-indigo-500\/50:hover { box-shadow: 0 10px 15px rgba(99, 102, 241, 0.5); }
-        .duration-300 { transition-duration: 300ms; }
-        .mt-2 { margin-top: 0.5rem; }
-        .relative { position: relative; }
-        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-        .items-center { align-items: center; }
-        .flex-grow { flex-grow: 1; }
-        .border-t { border-top-width: 1px; }
-        .border-gray-300 { border-color: #d1d5db; }
-        .flex-shrink { flex-shrink: 1; }
-        .mx-4 { margin-left: 1rem; margin-right: 1rem; }
-        .text-gray-400 { color: #9ca3af; }
-        .text-xs { font-size: 0.75rem; line-height: 1rem; }
-        .uppercase { text-transform: uppercase; }
-        .bg-white { background-color: #ffffff; }
-        .border-2 { border-width: 2px; }
-        .border-green-600 { border-color: #16a34a; }
-        .text-green-600 { color: #16a34a; }
-        .hover\:bg-green-50:hover { background-color: #ecfdf5; }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login – FitWork</title>
+  <link rel="stylesheet" href="./dist/styles.css">
+
+  <style>
+    /* ---------- variables del tema oscuro (igual que en desafios.html) ---------- */
+    :root{
+      --bg-body:#0d0d0d;
+      --panel:#121212;
+      --panel-soft:rgba(255,255,255,.04);
+      --accent:#1ed760;
+      --accent-hover:#22c55e;
+      --text:#ffffff;
+      --muted:#9a9a9a;
+      --border:rgba(255,255,255,.08);
+      --radius:20px;
+      --shadow:0 24px 80px rgba(0,0,0,.45);
+    }
+
+    /* ---------- reset básico ---------- */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:var(--bg-body);
+      color:var(--text);
+      min-height:100vh;
+      min-height:100dvh;                 /* altura real en móviles con barra de navegación */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1.5rem;                    /* 24 px a los lados en móvil */
+      position:relative;
+      overflow-x:hidden;                 /* evita scroll horizontal */
+    }
+
+    /* ---------- fondo animado (canvas) ---------- */
+    #bg-canvas{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      width:100%;
+      height:100%;
+    }
+
+    /* gradientes decorativos + grid sutil (igual que antes) */
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(ellipse 90% 60% at 50% -10%,rgba(30,215,96,.15),transparent 60%),
+        radial-gradient(ellipse 60% 40% at 100% 100%,rgba(30,215,96,.08),transparent 50%),
+        radial-gradient(ellipse 50% 50% at 0% 0%,rgba(30,215,96,.06),transparent 45%),
+        linear-gradient(180deg,rgba(255,255,255,.015) 0%,transparent 40%,rgba(0,0,0,.3) 100%);
+      pointer-events:none;
+      z-index:0;
+    }
+    body::after{
+      content:'';
+      position:fixed;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+      background-size:60px 60px;
+      opacity:.4;
+      pointer-events:none;
+      z-index:0;
+      mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 70%);
+    }
+
+    /* ---------- tarjeta de login ---------- */
+    .card{
+      position:relative;
+      z-index:1;
+      background:rgba(17,17,17,.9);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow),0 0 0 1px rgba(30,215,96,.05) inset;
+      width:100%;
+      max-width:28rem;               /* 448 px en escritorio */
+      padding:2.5rem;
+      animation:slideUp .6s cubic-bezier(.16,1,.3,1);
+    }
+    @keyframes slideUp{
+      from{opacity:0;transform:translateY(24px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* ---------- elementos internos ---------- */
+    .brand{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:56px;height:56px;
+      border-radius:16px;
+      background:linear-gradient(135deg,rgba(30,215,96,.15),rgba(30,215,96,.05));
+      border:1px solid rgba(30,215,96,.2);
+      color:var(--accent);
+      font-weight:800;font-size:22px;letter-spacing:.04em;
+      margin:0 auto 1.5rem;
+    }
+    .title{
+      font-size:1.75rem;line-height:1.2;font-weight:800;text-align:center;
+      margin-bottom:.5rem;
+      background:linear-gradient(180deg,#fff,var(--muted));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .subtitle{text-align:center;color:var(--muted);font-size:.95rem;margin-bottom:2rem;line-height:1.5;}
+
+    .space-y-4 > * + *{margin-top:1rem;}
+    .label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;}
+    .input-wrapper{position:relative;}
+    .input{
+      width:100%;padding:.875rem 1rem;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#161616;color:var(--text);
+      outline:none;transition:border-color .2s,box-shadow .2s,background .2s;
+      font-size:1rem;                         /* ≥16 px en móvil, evita zoom en iOS */
+    }
+    .input:hover{border-color:rgba(255,255,255,.15);background:#1a1a1a;}
+    .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(30,215,96,.15);background:#161616;}
+    .input::placeholder{color:var(--muted);opacity:.6;}
+
+    .btn{
+      width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+      padding:.875rem 1.5rem;border-radius:12px;
+      font-weight:700;font-size:1rem;border:none;cursor:pointer;
+      transition:background .2s,transform .2s,box-shadow .2s;
+      min-height:44px;                        /* área táctil mínima */
+    }
+    .btn-primary{
+      background:linear-gradient(180deg,var(--accent),#16b852);
+      color:#0d0d0d;box-shadow:0 4px 20px rgba(30,215,96,.25);
+    }
+    .btn-primary:hover{background:linear-gradient(180deg,var(--accent-hover),#1aa34a);transform:translateY(-2px);box-shadow:0 8px 30px rgba(30,215,96,.35);}
+    .btn-primary:active{transform:translateY(0);}
+    .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .btn-secondary{
+      background:rgba(255,255,255,.04);color:var(--accent);
+      border:1px solid rgba(30,215,96,.3);
+    }
+    .btn-secondary:hover{background:rgba(30,215,96,.1);border-color:var(--accent);}
+
+    .divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;}
+    .divider > span{flex:1;height:1px;background:var(--border);}
+    .divider-text{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;}
+
+    .footer-note{text-align:center;margin-top:1.5rem;color:var(--muted);font-size:.8rem;}
+    .footer-note a{color:var(--accent);text-decoration:none;font-weight:600;}
+    .footer-note a:hover{text-decoration:underline;}
+
+    /* ---------- botón “Inicio” ---------- */
+    .back-home{
+      position:fixed;top:1rem;left:1rem;z-index:10;
+      color:var(--muted);text-decoration:none;
+      font-size:.85rem;font-weight:500;
+      padding:.5rem .75rem;border-radius:8px;
+      background:rgba(255,255,255,.04);border:1px solid var(--border);
+      transition:all .2s;
+    }
+    .back-home:hover{color:var(--accent);border-color:rgba(30,215,96,.4);background:rgba(30,215,96,.08);}
+
+    /* ---------- estados de error ---------- */
+    .input-error{border-color:#ff4d4d !important;}
+    .error-msg{display:none;color:#ff6b6b;font-size:.75rem;margin-top:.35rem;}
+    .error-msg.visible{display:block;animation:shake .3s ease;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+    /* ---------- responsive ---------- */
+    @media (max-width:480px){
+      body{padding:1rem;align-items:flex-start;padding-top:5rem;}   /* espacio para botón “Inicio” */
+      .card{padding:1.5rem;border-radius:16px;}
+      .brand{width:48px;height:48px;font-size:18px;margin-bottom:1rem;}
+      .title{font-size:1.5rem;}
+      .subtitle{font-size:.9rem;margin-bottom:1.5rem;}
+      .label{font-size:.7rem;}
+      .input{padding:.75rem .875rem;font-size:1rem;border-radius:10px;}
+      .btn{padding:.75rem 1.25rem;font-size:.95rem;border-radius:10px;}
+      .divider{margin:1rem 0;}
+      .divider-text{font-size:.65rem;}
+      .footer-note{font-size:.75rem;margin-top:1rem;}
+      .back-home{top:.75rem;left:.75rem;padding:.4rem .6rem;font-size:.75rem;border-radius:6px;}
+      .error-msg{font-size:.7rem;}
+    }
+    @media (max-width:360px){
+      .card{padding:1.25rem;}
+      .title{font-size:1.35rem;}
+      .btn{padding:.7rem 1rem;font-size:.9rem;}
+    }
+    @media (min-width:768px){
+      .card{padding:2.5rem;}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .card{animation:none;}
+      #bg-canvas{display:none;}
+      body::after{display:none;}
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center h-screen">
 
-<div class="bg-white p-8 rounded-2xl shadow-2xl w-96 transform transition-all hover:scale-105">
-    <h2 class="text-3xl font-extrabold mb-6 text-center text-gray-800">Bienvenido</h2>
+<body>
+  <canvas id="bg-canvas"></canvas>
 
-    <form id="login-form" onsubmit="login(event)" class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-            <input id="email" type="email" placeholder="correo@ejemplo.com"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all">
+  <a href="index.html" class="back-home" aria-label="Volver al inicio">← Inicio</a>
+
+  <div class="card">
+    <div class="brand">FW</div>
+    <h2 class="title">Bienvenido</h2>
+    <p class="subtitle">Inicia sesión para acceder a tu panel y continuar tus retos.</p>
+
+    <form id="login-form" onsubmit="login(event)" class="space-y-4" novalidate>
+      <div>
+        <label class="label" for="email">Correo</label>
+        <div class="input-wrapper">
+          <input id="email" type="email" placeholder="correo@ejemplo.com" class="input" autocomplete="email" required>
+          <p class="error-msg" id="email-error">Ingresa un correo válido</p>
         </div>
+      </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-            <input id="password" type="password" placeholder="••••••••"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all">
+      <div>
+        <label class="label" for="password">Contraseña</label>
+        <div class="input-wrapper">
+          <input id="password" type="password" placeholder="••••••••" class="input" autocomplete="current-password" required minlength="6">
+          <p class="error-msg" id="password-error">Mínimo 6 caracteres</p>
         </div>
+      </div>
 
-        <button type="submit"
-            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 mt-2">
-            Iniciar Sesión
-        </button>
+      <button type="submit" class="btn btn-primary mt-2">Iniciar Sesión</button>
 
-        <div class="relative flex py-3 items-center">
-            <div class="flex-grow border-t border-gray-300"></div>
-            <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase">O</span>
-            <div class="flex-grow border-t border-gray-300"></div>
-        </div>
+      <div class="divider"><span></span><span class="divider-text">O</span><span></span></div>
 
-        <button type="button" onclick="window.location.href='registro.html'"
-            class="w-full bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold py-3 rounded-lg transition-all duration-300">
-            Crear Cuenta Nueva
-        </button>
+      <button type="button" onclick="window.location.href='registro.html'" class="btn btn-secondary">Crear Cuenta Nueva</button>
     </form>
-</div>
 
-<script>
-const SUPABASE_URL = "https://crjtcercspirgzzmzeax.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ULR8jNd9FD7W4Khudk0ebw_kCp_R4fM";
+    <p class="footer-note">¿Olvidaste tu contraseña? <a href="#">Recuperar acceso</a></p>
+  </div>
 
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+  <script>
+    const SUPABASE_URL = "https://crjtcercspirgzzmzeax.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ULR8jNd9FD7W4Khudk0ebw_kCp_R4fM";
 
-async function redirectIfAuthenticated() {
-    const { data: { user }, error } = await supabaseClient.auth.getUser();
-    if (!error && user) {
-        window.location.href = "panel.html";
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const emailInput    = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const emailError    = document.getElementById("email-error");
+    const passwordError = document.getElementById("password-error");
+    const submitBtn     = document.querySelector(".btn-primary");
+
+    function showError(input,errorEl){input.classList.add("input-error");errorEl.classList.add("visible");}
+    function clearError(input,errorEl){input.classList.remove("input-error");errorEl.classList.remove("visible");}
+    function validateEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+
+    emailInput.addEventListener("input",()=>clearError(emailInput,emailError));
+    passwordInput.addEventListener("input",()=>clearError(passwordInput,passwordError));
+
+    async function redirectIfAuthenticated(){
+      const {data:{user},error}=await supabaseClient.auth.getUser();
+      if(!error&&user) window.location.href="panel.html";
     }
-}
 
-async function login(e) {
-    if (e) e.preventDefault();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+    async function login(e){
+      e.preventDefault();
+      let ok=true;
+      const email=emailInput.value.trim();
+      const password=passwordInput.value;
 
-    if (!email || !password) {
-        Swal.fire("Atención", "Por favor ingresa tu correo y contraseña para continuar.", "warning");
+      if(!email||!validateEmail(email)){showError(emailInput,emailError);ok=false;}
+      if(!password||password.length<6){showError(passwordInput,passwordError);ok=false;}
+      if(!ok) return;
+
+      submitBtn.disabled=true;submitBtn.textContent="Entrando…";
+
+      Swal.fire({title:'Verificando credenciales…',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+
+      const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+
+      if(error){
+        submitBtn.disabled=false;submitBtn.textContent="Iniciar Sesión";
+        const msg=error.message.includes("Invalid login")||error.message.includes("Invalid")
+          ?"Correo o contraseña incorrectos. Verifica tus datos e intenta nuevamente."
+          :error.message;
+        Swal.fire("Error de acceso",msg,"error");
         return;
-    }
-
-    Swal.fire({
-        title: 'Verificando credenciales...',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-    });
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-    if (error) {
-        const message = error.message.includes("Invalid login") || error.message.includes("Invalid")
-            ? "Correo o contraseña incorrectos. Verifica tus datos e intenta nuevamente."
-            : error.message;
-        Swal.fire("Error de acceso", message, "error");
+      }
+      if(!data.user){
+        submitBtn.disabled=false;submitBtn.textContent="Iniciar Sesión";
+        Swal.fire("Error de acceso","No se pudo iniciar sesión. Intenta de nuevo.","error");
         return;
+      }
+
+      Swal.fire({title:"¡Bienvenido!",text:"Ingresando al panel principal…",icon:"success",timer:1000,showConfirmButton:false})
+        .then(()=>window.location.href="panel.html");
     }
 
-    if (!data.user) {
-        Swal.fire("Error de acceso", "No se pudo iniciar sesión. Intenta de nuevo.", "error");
-        return;
+    /* ---------- canvas background animation ---------- */
+    const canvas=document.getElementById("bg-canvas");
+    const ctx=canvas.getContext("2d");
+    let particles=[],W=0,H=0;
+
+    function resize(){
+      W=canvas.width=window.innerWidth;
+      H=canvas.height=window.innerHeight;
+    }
+    window.addEventListener("resize",resize);
+    resize();
+
+    class Particle{
+      constructor(){this.reset();}
+      reset(){
+        this.x=Math.random()*W;
+        this.y=Math.random()*H;
+        this.r=Math.random()*1.5+0.5;
+        this.vx=(Math.random()-.5)*.3;
+        this.vy=(Math.random()-.5)*.3;
+        this.alpha=Math.random()*.3+.1;
+      }
+      update(){
+        this.x+=this.vx;this.y+=this.vy;
+        if(this.x<-10||this.x>W+10||this.y<-10||this.y>H+10)this.reset();
+      }
+      draw(){
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(30,215,96,${this.alpha})`;
+        ctx.fill();
+      }
     }
 
-    Swal.fire({
-        title: "¡Bienvenido!",
-        text: "Ingresando al panel principal...",
-        icon: "success",
-        timer: 1000,
-        showConfirmButton: false
-    }).then(() => {
-        window.location.href = "panel.html";
-    });
-}
+    for(let i=0;i<60;i++)particles.push(new Particle());
 
-window.addEventListener("load", redirectIfAuthenticated);
-</script>
+    function animate(){
+      ctx.clearRect(0,0,W,H);
+      particles.forEach(p=>{p.update();p.draw();});
+      for(let i=0;i<particles.length;i++){
+        for(let j=i+1;j<particles.length;j++){
+          const dx=particles[i].x-particles[j].x;
+          const dy=particles[i].y-particles[j].y;
+          const d=Math.hypot(dx,dy);
+          if(d<120){
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x,particles[i].y);
+            ctx.lineTo(particles[j].x,particles[j].y);
+            ctx.strokeStyle=`rgba(30,215,96,${0.03*(1-d/120)})`;
+            ctx.lineWidth=.5;ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
 
+    window.addEventListener("load",redirectIfAuthenticated);
+  </script>
 </body>
 </html>

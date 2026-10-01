@@ -6,24 +6,38 @@
     <title>FitWork | Panel principal</title>
     <link rel="stylesheet" href="./dist/styles.css">
     <style>
-        body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f4f7fb; color:#111827; }
+        :root {
+            --bg-body: #0d0d0d;
+            --panel: #121212;
+            --panel-soft: rgba(255,255,255,0.04);
+            --accent: #1ed760;
+            --text: #ffffff;
+            --muted: #9a9a9a;
+            --border: rgba(255,255,255,0.08);
+            --radius: 18px;
+            --shadow: 0 24px 80px rgba(0,0,0,0.45);
+        }
+        body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:var(--bg-body); color:var(--text); }
         .container { max-width: 1120px; margin: 0 auto; padding: 24px; }
-        .card { background:white; border-radius:20px; padding:24px; box-shadow:0 12px 30px rgba(0,0,0,.08); }
+        .card { background:#111111; border:1px solid var(--border); border-radius:20px; padding:24px; box-shadow:0 12px 30px rgba(0,0,0,0.5); }
         .grid { display:grid; gap:20px; }
         .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .badge { display:inline-block; padding:8px 12px; border-radius:999px; background:#ecfdf5; color:#047857; font-weight:700; font-size:13px; }
-        .muted { color:#6b7280; }
-        .stat { padding:16px; border-radius:16px; background:#f8fafc; border:1px solid #e5e7eb; }
+        .badge { display:inline-block; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.06); color:var(--accent); font-weight:700; font-size:13px; }
+        .muted { color:var(--muted); }
+        .stat { padding:16px; border-radius:16px; background:var(--panel-soft); border:1px solid var(--border); }
         .stat strong { display:block; font-size:24px; margin-top:6px; }
         .btn { display:inline-block; padding:10px 16px; border-radius:12px; text-decoration:none; font-weight:700; border:none; cursor:pointer; }
-        .btn-primary { background:#4f46e5; color:white; }
-        .btn-danger { background:#ef4444; color:white; }
-        .progress-bar { width:100%; height:10px; border-radius:999px; background:#e5e7eb; overflow:hidden; }
-        .progress-bar > span { display:block; height:100%; background:linear-gradient(90deg, #4f46e5, #22c55e); }
+        .btn-primary { background:var(--accent); color:#0d0d0d; }
+        .btn-danger { background:#ff4d4d; color:#0d0d0d; }
+        .progress-bar { width:100%; height:10px; border-radius:999px; background:var(--border); overflow:hidden; }
+        .progress-bar > span { display:block; height:100%; background:linear-gradient(90deg, var(--accent), #22c55e); }
         .list { display:grid; gap:10px; }
-        .list-item { padding:12px 14px; border-radius:12px; background:#f8fafc; border:1px solid #e5e7eb; }
+        .list-item { padding:12px 14px; border-radius:12px; background:var(--panel); border:1px solid var(--border); }
         @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+        .bottom-nav { position:fixed; bottom:0; left:0; width:100%; background:rgba(18,18,18,0.98); border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; gap:10px; padding:12px 16px; z-index:50; }
+        .bottom-nav a { color:var(--muted); text-decoration:none; font-size:13px; font-weight:700; padding:10px 14px; border-radius:15px; background:rgba(255,255,255,0.04); transition:all .2s ease; }
+        .bottom-nav a:hover, .bottom-nav a.active { color:#fff; background:rgba(30,215,96,0.14); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -146,5 +160,11 @@
             await loadStats(user);
         });
     </script>
+    <nav class="bottom-nav">
+        <a href="index.html">🏠 Inicio</a>
+        <a href="desafios.html">🎯 Desafíos</a>
+        <a href="ranking.html">🏆 Ranking</a>
+        <a href="panel.html" class="active">👤 Perfil</a>
+    </nav>
 </body>
 </html>

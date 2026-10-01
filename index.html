@@ -731,15 +731,19 @@
 
         async function loadHero(user) {
             document.body.classList.add('logged-in');
-            const { data } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from("usuario")
                 .select("nombre, puntos, rol (nombre)")
                 .eq("auth_id", user.id)
                 .maybeSingle();
 
+            console.log('loadHero profile:', data, 'error:', error);
+
             const nombre = data?.nombre || user.email || "Usuario";
             const puntos = data?.puntos ?? 0;
             const isAdmin = data?.rol?.nombre === "Administrador";
+
+            console.log('isAdmin:', isAdmin, 'rol:', data?.rol);
 
             // Update hero greeting
             const heroTitle = document.getElementById("hero-title");

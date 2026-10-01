@@ -746,6 +746,12 @@
 
             console.log('isAdmin:', isAdmin, 'rol:', data?.rol);
 
+            // Visual debug banner
+            const debugBanner = document.createElement('div');
+            debugBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:' + (isAdmin ? '#22c55e' : '#ef4444') + ';color:white;padding:8px;text-align:center;z-index:9999;font-size:12px;font-family:monospace;';
+            debugBanner.textContent = `DEBUG: usuario="${nombre}" | rol="${rolNombre}" | isAdmin=${isAdmin} | auth_id=${user.id}`;
+            document.body.prepend(debugBanner);
+
             // Update hero greeting
             const heroTitle = document.getElementById("hero-title");
             const heroCopy = document.querySelector(".hero-copy");
@@ -774,9 +780,13 @@
                     `;
                     sideNav.insertAdjacentHTML('beforeend', adminLinks);
                     console.log('Admin links added to side nav');
+                    debugBanner.textContent += ' | ✓ Links added';
                 } else {
                     console.error('side-nav element not found!');
+                    debugBanner.textContent += ' | ✗ side-nav NOT FOUND';
                 }
+            } else {
+                debugBanner.textContent += ' | ✗ Not admin';
             }
 
             const { data: rows } = await supabaseClient

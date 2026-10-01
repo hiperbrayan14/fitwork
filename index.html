@@ -8,7 +8,64 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 240px;
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            padding: 24px 16px;
+            gap: 12px;
+            z-index: 100;
+            box-shadow: 4px 0 24px rgba(0,0,0,.2);
+        }
+        .side-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background .2s, color .2s;
+        }
+        .side-nav a:hover,
+        .side-nav a.active {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+        .side-nav .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 4px 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+            color: var(--green);
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: .02em;
+        }
+        body.logged-in .side-nav { display: flex; }
+        body.logged-in main.container { margin-left: 240px; }
+        @media (max-width: 760px) {
+            .side-nav { width: 200px; }
+            body.logged-in main.container { margin-left: 200px; }
+        }
+        @media (max-width: 480px) {
+            .side-nav { position: fixed; left: -260px; width: 240px; height: 100vh; transition: left .3s ease; }
+            body.logged-in .side-nav { left: 0; }
+            body.logged-in main.container { margin-left: 0; }
+        }
         :root {
             --bg: #071018;
             --bg-soft: #0b1620;
@@ -199,6 +256,98 @@
         .challenge-badge { color: var(--green); background: var(--green-soft); padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
         .challenge-button { margin-top: 20px; display: inline-flex; color: var(--green); text-decoration: none; font-size: 13px; font-weight: 700; }
 
+        .cards-grid { display: grid; gap: 18px; }
+        .activity-card {
+            border: 1px solid var(--border);
+            background: linear-gradient(145deg, rgba(18,32,44,.92), rgba(10,21,30,.82));
+            border-radius: var(--radius);
+            box-shadow: 0 16px 45px rgba(0,0,0,.13);
+            padding: 26px;
+            transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+        }
+        .activity-card:hover { transform: translateY(-4px); border-color: rgba(99,243,154,.35); box-shadow: 0 20px 50px rgba(0,0,0,.22); }
+        .activity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: var(--green-soft);
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .activity-badge span { color: var(--green); }
+        .activity-heading { font-size: 17px; font-weight: 700; margin-bottom: 12px; line-height: 1.18; }
+        .activity-subtitle { color: var(--muted); font-size: 13px; line-height: 1.75; margin-bottom: 18px; }
+        .activity-timer {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: var(--green-soft);
+            border: 1px solid rgba(99,243,154,.25);
+            color: var(--green);
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+        }
+        .activity-timer.visible { display: flex; }
+        .activity-timer .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ff4d4d;
+            animation: pulse-dot 1s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+        .activity-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(99,243,154,.22);
+            background: linear-gradient(180deg, var(--green-soft), rgba(99,243,154,.06));
+            color: var(--green);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            transition: transform .2s ease, background .2s ease;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .activity-cta:hover { transform: translateY(-1px); background: linear-gradient(180deg, rgba(99,243,154,.18), rgba(99,243,154,.08)); }
+        .activity-cta.stop {
+            border-color: rgba(255,77,77,0.35);
+            background: linear-gradient(180deg, rgba(255,77,77,0.16), rgba(255,77,77,0.06));
+            color: #ff8080;
+        }
+        .activity-cta.pending {
+            opacity: 0.7;
+            cursor: default;
+            pointer-events: none;
+            border-color: rgba(250,204,21,0.3);
+            background: rgba(250,204,21,0.08);
+            color: #facc15;
+        }
+        .activity-cta.done {
+            opacity: 0.55;
+            cursor: default;
+            pointer-events: none;
+            border-color: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+        }
+
         .stats {
             margin: 30px 0 10px;
             display: grid;
@@ -304,6 +453,13 @@
     </style>
 </head>
 <body>
+    <nav class="side-nav" id="side-nav" aria-label="Navegación principal">
+        <div class="nav-brand">FIT<span style="color:var(--green)">WORK</span></div>
+        <a href="index.html" class="active">🏠 Inicio</a>
+        <a href="desafios.html">🎯 Desafíos</a>
+        <a href="ranking.html">🏆 Ranking</a>
+        <a href="panel.html">👤 Perfil</a>
+    </nav>
     <main class="container">
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-copy-block">
@@ -373,9 +529,86 @@
                 <div><div class="section-kicker">Desafíos</div><h2 class="section-title" id="challenges-title">Pequeños retos, grandes avances</h2></div>
                 <p class="section-description">Desafíos físicos pensados para que puedas convertir tu actividad en una experiencia más dinámica.</p>
             </div>
-            <div class="challenge-grid">
-                <article class="challenge-card"><div class="challenge-top"><div class="challenge-title">🏃 Reto de resistencia</div><span class="challenge-badge">20 vueltas</span></div><p class="challenge-description">Completa el recorrido establecido en un solo entrenamiento y registra tu avance.</p><a class="challenge-button" href="desafios.html">Ver desafío →</a></article>
-                <article class="challenge-card"><div class="challenge-top"><div class="challenge-title">💪 Reto de fuerza</div><span class="challenge-badge">Técnica</span></div><p class="challenge-description">Completa una rutina de fuerza manteniendo una técnica controlada y consistente.</p><a class="challenge-button" href="desafios.html">Ver desafío →</a></article>
+            <div class="cards-grid" id="cards-grid">
+                <article class="activity-card" data-id="futbol10" data-points="20">
+                    <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                    <h2 class="activity-heading">Clásico de Microfútbol en el Descanso</h2>
+                    <p class="activity-subtitle">Arma el partido con tus amigos en el patio. Jugar 10 minutos activa tus reflejos y suma tus primeros puntos.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="yoga_zen" data-points="20">
+                    <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                    <h2 class="activity-heading">Estiramiento y Yoga Zen</h2>
+                    <p class="activity-subtitle">Relaja tus hombros y espalda usando las colchonetas del gimnasio. Ideal para liberar el estrés entre clases.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="pingpong" data-points="20">
+                    <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                    <h2 class="activity-heading">Torneo Relámpago de Ping-Pong</h2>
+                    <p class="activity-subtitle">Juega una partida rápida en las mesas del colegio. Activa tu concentración y coordinación mano-ojo.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="trote10" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Trote de Resistencia Base</h2>
+                    <p class="activity-subtitle">Completa 10 vueltas seguidas a ritmo constante alrededor de la cancha principal para mejorar tu capacidad cardiovascular.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="baile" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Reto de Ritmo y Coreografía</h2>
+                    <p class="activity-subtitle">Sigue una rutina corta de baile o aeróbicos grupales en el patio durante las jornadas recreativas del proyecto.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="cuerda3" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Minuto de Fuego con Cuerda</h2>
+                    <p class="activity-subtitle">Consigue una cuerda en el área de deportes y realiza 3 series de 1 minuto continuo de saltos veloces.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="abs3" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Fuerza Abdominal en Colchoneta</h2>
+                    <p class="activity-subtitle">Completa una rutina concentrada de 3 series de 20 abdominales cortas en la zona de entrenamiento.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="vueltas20" data-points="100">
+                    <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                    <h2 class="activity-heading">El Reto Reina: 20 Vueltas a la Cancha</h2>
+                    <p class="activity-subtitle">Pon a prueba tu resistencia máxima dando 20 vueltas completas a la cancha grande de fútbol del colegio.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="barras" data-points="100">
+                    <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                    <h2 class="activity-heading">Calistenia Estricta en Barras</h2>
+                    <p class="activity-subtitle">Rutina de fuerza pura: Ejecuta 3 series de 8 dominadas o colgadas controladas en las barras del gimnasio.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="burpees" data-points="100">
+                    <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                    <h2 class="activity-heading">Potencia Total con Burpees</h2>
+                    <p class="activity-subtitle">Completa 3 series intensas de 12 burpees seguidos (flexión, sentadilla y salto) en el menor tiempo posible.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
             </div>
         </section>
 
@@ -459,5 +692,202 @@
             <div class="footer-bottom">© 2026 FITWORK. Todos los derechos reservados.</div>
         </div>
     </footer>
+
+    <script>
+        const SUPABASE_URL = "https://crjtcercspirgzzmzeax.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_ULR8jNd9FD7W4Khudk0ebw_kCp_R4fM";
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUser = null;
+        const timers = {};
+
+        const CHALLENGE_TITLES = {
+            futbol10: "Clásico de Microfútbol en el Descanso",
+            yoga_zen: "Estiramiento y Yoga Zen",
+            pingpong: "Torneo Relámpago de Ping-Pong",
+            trote10: "Trote de Resistencia Base",
+            baile: "Reto de Ritmo y Coreografía",
+            cuerda3: "Minuto de Fuego con Cuerda",
+            abs3: "Fuerza Abdominal en Colchoneta",
+            vueltas20: "El Reto Reina: 20 Vueltas a la Cancha",
+            barras: "Calistenia Estricta en Barras",
+            burpees: "Potencia Total con Burpees"
+        };
+
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+            const s = (totalSeconds % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
+        }
+
+        async function ensureSession() {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            if (error || !user) {
+                return null;
+            }
+            return user;
+        }
+
+        async function loadHero(user) {
+            document.body.classList.add('logged-in');
+            const { data } = await supabaseClient
+                .from("usuario")
+                .select("nombre, puntos")
+                .eq("auth_id", user.id)
+                .maybeSingle();
+
+            const nombre = data?.nombre || user.email || "Usuario";
+            const puntos = data?.puntos ?? 0;
+
+            // Update hero greeting
+            const heroTitle = document.getElementById("hero-title");
+            const heroCopy = document.querySelector(".hero-copy");
+            if (heroTitle && heroCopy) {
+                heroTitle.innerHTML = `¡Hola, ${nombre}!<br><span>Entrena hoy, mejora mañana.</span>`;
+                heroCopy.textContent = `Bienvenido de nuevo, ${nombre}. Tienes ${puntos} puntos en el ranking.`;
+            }
+
+            // Update hero actions to show profile instead of login/register
+            const heroActions = document.querySelector(".hero-actions");
+            if (heroActions) {
+                heroActions.innerHTML = `
+                    <a class="btn btn-primary" href="panel.html">Mi Panel</a>
+                    <a class="btn btn-outline" href="desafios.html">Ver Desafíos</a>
+                `;
+            }
+
+            const { data: rows } = await supabaseClient
+                .from("usuario")
+                .select("auth_id, puntos")
+                .order("puntos", { ascending: false });
+
+            // Could add rank display somewhere if needed
+        }
+
+        async function applySolicitudStates() {
+            if (!currentUser) return;
+            const { data: solicitudes } = await supabaseClient
+                .from("solicitud_reto")
+                .select("challenge_id, estado")
+                .eq("auth_id", currentUser.id);
+
+            if (!solicitudes) return;
+
+            const estadoPorReto = {};
+            solicitudes.forEach(s => {
+                const actual = estadoPorReto[s.challenge_id];
+                if (!actual || s.estado === "aprobado" || (s.estado === "pendiente" && actual !== "aprobado")) {
+                    estadoPorReto[s.challenge_id] = s.estado;
+                }
+            });
+
+            document.querySelectorAll(".activity-card").forEach(card => {
+                const id = card.dataset.id;
+                const estado = estadoPorReto[id];
+                const btn = card.querySelector(".activity-cta");
+
+                if (estado === "aprobado") {
+                    btn.classList.add("done");
+                    btn.textContent = "✓ Puntos aprobados";
+                } else if (estado === "pendiente") {
+                    btn.classList.add("pending");
+                    btn.textContent = "⏳ Esperando aprobación del profesor";
+                }
+            });
+        }
+
+        function startTimer(card) {
+            const id = card.dataset.id;
+            const btn = card.querySelector(".activity-cta");
+            const timerBox = card.querySelector(".activity-timer");
+            const timerText = card.querySelector(".timer-text");
+
+            timers[id] = { seconds: 0 };
+            timerBox.classList.add("visible");
+            btn.textContent = "Finalizar Reto (00:00)";
+            btn.classList.add("stop");
+
+            timers[id].intervalId = setInterval(() => {
+                timers[id].seconds += 1;
+                const formatted = formatTime(timers[id].seconds);
+                timerText.textContent = formatted;
+                btn.textContent = `Finalizar Reto (${formatted})`;
+            }, 1000);
+        }
+
+        async function stopTimerAndSubmit(card) {
+            const id = card.dataset.id;
+            const points = Number(card.dataset.points);
+            const title = CHALLENGE_TITLES[id];
+            const btn = card.querySelector(".activity-cta");
+
+            clearInterval(timers[id].intervalId);
+            const seconds = timers[id].seconds;
+            delete timers[id];
+
+            btn.classList.remove("stop");
+            btn.textContent = "Guardando...";
+
+            const { error } = await supabaseClient.from("solicitud_reto").insert({
+                auth_id: currentUser.id,
+                challenge_id: id,
+                titulo: title,
+                puntos: points,
+                tiempo_segundos: seconds,
+                estado: "pendiente"
+            });
+
+            if (error) {
+                btn.classList.add("stop");
+                btn.textContent = `Finalizar Reto (${formatTime(seconds)})`;
+                Swal.fire("Error", "No se pudo enviar el reto. Intenta de nuevo.", "error");
+                return;
+            }
+
+            btn.classList.add("pending");
+            btn.textContent = "⏳ Esperando aprobación del profesor";
+            Swal.fire({
+                title: "¡Reto enviado!",
+                text: `Avísale a tu profesor para que confirme en persona y apruebe tus ${points} puntos.`,
+                icon: "success"
+            });
+        }
+
+        function handleClick(card) {
+            const id = card.dataset.id;
+            const btn = card.querySelector(".activity-cta");
+
+            if (btn.classList.contains("pending") || btn.classList.contains("done")) return;
+
+            if (timers[id]) {
+                stopTimerAndSubmit(card);
+            } else {
+                startTimer(card);
+            }
+        }
+
+        window.addEventListener("load", async () => {
+            currentUser = await ensureSession();
+            if (currentUser) {
+                await loadHero(currentUser);
+                await applySolicitudStates();
+            }
+
+            document.querySelectorAll(".activity-card").forEach(card => {
+                const btn = card.querySelector(".activity-cta");
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (!currentUser) {
+                        Swal.fire("Inicia sesión", "Debes iniciar sesión para participar en los retos.", "warning").then(() => {
+                            window.location.href = "login.html";
+                        });
+                        return;
+                    }
+                    handleClick(card);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

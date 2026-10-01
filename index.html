@@ -741,7 +741,8 @@
 
             const nombre = data?.nombre || user.email || "Usuario";
             const puntos = data?.puntos ?? 0;
-            const isAdmin = data?.rol?.nombre === "Administrador";
+            const rolNombre = data?.rol?.nombre || "";
+            const isAdmin = ["Administrador", "Admin", "admin", "administrador"].includes(rolNombre);
 
             console.log('isAdmin:', isAdmin, 'rol:', data?.rol);
 
@@ -765,12 +766,16 @@
             // Add admin links to side nav if user is admin
             if (isAdmin) {
                 const sideNav = document.getElementById("side-nav");
+                console.log('sideNav element:', sideNav);
                 if (sideNav) {
                     const adminLinks = `
                         <a href="aprobaciones.html">✅ Aprobaciones</a>
                         <a href="ranking.html">🏆 Ranking Admin</a>
                     `;
                     sideNav.insertAdjacentHTML('beforeend', adminLinks);
+                    console.log('Admin links added to side nav');
+                } else {
+                    console.error('side-nav element not found!');
                 }
             }
 

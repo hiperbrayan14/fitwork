@@ -76,13 +76,12 @@
 
         /* Hero */
         .hero {
-            position: relative;
-            min-height: 570px;
-            display: grid;
-            grid-template-columns: 1fr 1.05fr;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 58px;
+            gap: 40px;
             padding: 72px 0 76px;
+            text-align: center;
         }
 
         .hero::after {
@@ -134,23 +133,38 @@
         .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
         .hero-visual {
-            position: relative;
-            height: 430px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            width: 100%;
         }
         .hero-image {
-            position: absolute;
+            position: static;
+            width: 100%;
+            max-width: 800px;
+            height: auto;
             overflow: hidden;
             border: 1px solid rgba(159, 220, 186, .3);
             border-radius: 24px;
             box-shadow: 0 28px 70px rgba(0,0,0,.35);
             background: #14222e;
         }
-        .hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .45s ease; }
+        .hero-image img { width: 100%; height: auto; object-fit: cover; display: block; transition: transform .45s ease; }
         .hero-image:hover img { transform: scale(1.045); }
         .hero-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(3,8,12,.45)); }
-        .hero-image.one { width: 57%; height: 350px; left: 3%; top: 34px; transform: rotate(-2deg); }
-        .hero-image.two { width: 38%; height: 195px; right: 1%; top: 8px; transform: rotate(2deg); }
-        .hero-image.three { width: 38%; height: 190px; right: 4%; bottom: 5px; transform: rotate(-1deg); }
+        .hero-image.one,
+        .hero-image.two,
+        .hero-image.three {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            transform: none;
+            left: auto;
+            right: auto;
+            top: auto;
+            bottom: auto;
+        }
         .image-label {
             position: absolute;
             left: 14px;

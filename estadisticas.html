@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estadísticas</title>
+    <link rel="stylesheet" href="./dist/styles.css">
+    <style>
+        body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f3f4f6; color:#1f2937; }
+        .wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+        .header { background:#fff; border-radius:1rem; box-shadow:0 1px 2px rgba(0,0,0,0.05); border-left:8px solid #1b5e3a; padding:1.5rem; margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+        .title { font-size:1.875rem; font-weight:800; letter-spacing:-0.025em; }
+        .greeting { color:#1b5e3a; font-weight:600; margin-top:0.25rem; display:flex; align-items:center; gap:8px; }
+        .dot { width:0.5rem; height:0.5rem; border-radius:9999px; background:#22c55e; display:inline-block; }
+        .nav-btns { display:flex; gap:10px; flex-wrap:wrap; }
+        .btn { padding:0.625rem 1.5rem; border-radius:0.75rem; font-weight:700; text-decoration:none; border:none; cursor:pointer; font-size:14px; }
+        .btn-ghost { background:#fdf6e3; color:#8a6d1a; }
+        .btn-danger { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+
+        .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-bottom: 24px; }
+        .stat-card { background:#fff; border-radius:1rem; padding:22px; box-shadow:0 1px 3px rgba(0,0,0,0.08); border:1px solid #f3f4f6; }
+        .stat-label { color:#6b7280; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+        .stat-value { font-size:32px; font-weight:800; margin-top:8px; color:#0c3323; }
+        .stat-sub { color:#9ca3af; font-size:12px; margin-top:4px; }
+
+        .section { background:#fff; border-radius:1rem; padding:22px; box-shadow:0 1px 3px rgba(0,0,0,0.08); border:1px solid #f3f4f6; margin-bottom:20px; }
+        .section h2 { font-size:18px; font-weight:800; margin:0 0 16px; }
+        .rank-row { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:10px; background:#f8fafc; margin-bottom:8px; }
+        .rank-name { font-weight:700; }
+        .rank-bar-outer { flex:1; height:10px; background:#e5e7eb; border-radius:999px; margin:0 14px; overflow:hidden; }
+        .rank-bar-inner { height:100%; background:linear-gradient(90deg, #0c3323, #d4af37); }
+        .rank-count { font-weight:800; color:#1b5e3a; min-width: 70px; text-align:right; }
+        .empty { color:#6b7280; text-align:center; padding:30px; }
+        .gold { color:#b8912f; font-weight:800; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<div class="wrap">
+    <div class="header">
+        <div>
+            <div class="title">📊 Estadísticas de Fit Work</div>
+            <p class="greeting"><span class="dot"></span>Hola, <span id="admin-name">Cargando...</span></p>
+        </div>
+        <div class="nav-btns">
+            <a href="usuarios.html" class="btn btn-ghost">Usuarios</a>
+            <a href="aprobaciones.html" class="btn btn-ghost">Aprobaciones</a>
+            <button onclick="cerrarSesion()" class="btn btn-danger">Cerrar sesión</button>
+        </div>
+    </div>
+
+    <div class="grid" id="stat-cards">
+        <div class="stat-card"><div class="stat-label">Total de usuarios</div><div class="stat-value" id="st-total">...</div></div>
+        <div class="stat-card"><div class="stat-label">Administradores</div><div class="stat-value" id="st-admins">...</div></div>
+        <div class="stat-card"><div class="stat-label">Estudiantes</div><div class="stat-value" id="st-students">...</div></div>
+        <div class="stat-card"><div class="stat-label">Puntos otorgados en total</div><div class="stat-value" id="st-points">...</div></div>
+        <div class="stat-card"><div class="stat-label">Retos aprobados</div><div class="stat-value" id="st-approved">...</div></div>
+        <div class="stat-card"><div class="stat-label">Retos pendientes por revisar</div><div class="stat-value" id="st-pending">...</div><div class="stat-sub">Esperando confirmación del profesor</div></div>
+    </div>
+
+    <div class="section">
+        <h2>🏆 Ejercicios más realizados</h2>
+        <div id="top-ejercicios"><div class="empty">Cargando...</div></div>
+    </div>
+
+    <div class="section">
+        <h2>🥇 Top 5 estudiantes por puntos</h2>
+        <div id="top-estudiantes"><div class="empty">Cargando...</div></div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://crjtcercspirgzzmzeax.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ULR8jNd9FD7W4Khudk0ebw_kCp_R4fM";
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function checkAuth() {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) {
+            window.location.href = "login.html";
+            return false;
+        }
+
+        const { data: profile } = await supabaseClient
+            .from("usuario")
+            .select("nombre, rol (nombre)")
+            .eq("auth_id", user.id)
+            .single();
+
+        if (!profile || profile.rol?.nombre !== "Administrador") {
+            await Swal.fire({
+                title: "Acceso restringido",
+                text: "Esta sección es solo para administradores.",
+                icon: "warning"
+            });
+            window.location.href = "panel.html";
+            return false;
+        }
+
+        document.getElementById("admin-name").textContent = profile.nombre;
+        return true;
+    }
+
+    async function cargarEstadisticas() {
+        // Usuarios y roles
+        const { data: usuarios } = await supabaseClient
+            .from("usuario")
+            .select("nombre, puntos, rol (nombre)")
+            .order("puntos", { ascending: false });
+
+        const total = usuarios?.length || 0;
+        const admins = usuarios?.filter(u => u.rol?.nombre === "Administrador").length || 0;
+        const puntosTotales = usuarios?.reduce((sum, u) => sum + (u.puntos || 0), 0) || 0;
+
+        document.getElementById("st-total").textContent = total;
+        document.getElementById("st-admins").textContent = admins;
+        document.getElementById("st-students").textContent = total - admins;
+        document.getElementById("st-points").textContent = puntosTotales;
+
+        // Top 5 estudiantes
+        const topEstudiantes = document.getElementById("top-estudiantes");
+        if (!usuarios || !usuarios.length) {
+            topEstudiantes.innerHTML = '<div class="empty">Aún no hay usuarios.</div>';
+        } else {
+            const maxPuntos = Math.max(...usuarios.map(u => u.puntos || 0), 1);
+            topEstudiantes.innerHTML = usuarios.slice(0, 5).map(u => `
+                <div class="rank-row">
+                    <span class="rank-name">${u.nombre || "Usuario"}</span>
+                    <div class="rank-bar-outer"><div class="rank-bar-inner" style="width:${Math.round(((u.puntos||0) / maxPuntos) * 100)}%"></div></div>
+                    <span class="rank-count">${u.puntos || 0} pts</span>
+                </div>
+            `).join("");
+        }
+
+        // Solicitudes: aprobadas y pendientes
+        const { data: solicitudes } = await supabaseClient
+            .from("solicitud_reto")
+            .select("titulo, estado");
+
+        const aprobadas = solicitudes?.filter(s => s.estado === "aprobado") || [];
+        const pendientes = solicitudes?.filter(s => s.estado === "pendiente") || [];
+
+        document.getElementById("st-approved").textContent = aprobadas.length;
+        document.getElementById("st-pending").textContent = pendientes.length;
+
+        // Ejercicio más realizado (conteo por título, solo aprobados)
+        const conteo = {};
+        aprobadas.forEach(s => { conteo[s.titulo] = (conteo[s.titulo] || 0) + 1; });
+        const ordenado = Object.entries(conteo).sort((a, b) => b[1] - a[1]);
+
+        const topEjercicios = document.getElementById("top-ejercicios");
+        if (!ordenado.length) {
+            topEjercicios.innerHTML = '<div class="empty">Todavía no se ha aprobado ningún reto.</div>';
+        } else {
+            const max = ordenado[0][1];
+            topEjercicios.innerHTML = ordenado.slice(0, 6).map(([titulo, veces], i) => `
+                <div class="rank-row">
+                    <span class="rank-name">${i === 0 ? "🥇 " : ""}${titulo}</span>
+                    <div class="rank-bar-outer"><div class="rank-bar-inner" style="width:${Math.round((veces / max) * 100)}%"></div></div>
+                    <span class="rank-count">${veces} ${veces === 1 ? "vez" : "veces"}</span>
+                </div>
+            `).join("");
+        }
+    }
+
+    async function cerrarSesion() {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+    }
+
+    window.onload = async () => {
+        const esAdmin = await checkAuth();
+        if (!esAdmin) return;
+        cargarEstadisticas();
+    };
+</script>
+</body>
+</html>

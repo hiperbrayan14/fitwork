@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FITWORK - Plataforma de fitness para estudiantes.">
+    <title>FITWORK | Entrena hoy, mejora mañana</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Botón hamburguesa (solo visible en móvil) */
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 200;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,.2);
+        }
+        .nav-toggle:hover { background: var(--card-strong); }
+        .hamburger {
+            position: relative;
+            width: 22px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: background .2s ease;
+        }
+        .hamburger::before,
+        .hamburger::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: transform .3s ease, top .3s ease, bottom .3s ease;
+        }
+        .hamburger::before { top: -7px; }
+        .hamburger::after { bottom: -7px; }
+
+        /* Animación hamburguesa -> X */
+        .nav-toggle[aria-expanded="true"] .hamburger { background: transparent; }
+        .nav-toggle[aria-expanded="true"] .hamburger::before { top: 0; transform: rotate(45deg); }
+        .nav-toggle[aria-expanded="true"] .hamburger::after { bottom: 0; transform: rotate(-45deg); }
+
+        /* Overlay para cerrar menú */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.5);
+            z-index: 90;
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+        .nav-overlay.visible { display: block; opacity: 1; }
+
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 240px;
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            padding: 24px 16px;
+            gap: 12px;
+            z-index: 100;
+            box-shadow: 4px 0 24px rgba(0,0,0,.2);
+        }
+        .side-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background .2s, color .2s;
+        }
+        .side-nav a:hover,
+        .side-nav a.active {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+        .side-nav .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 4px 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+            color: var(--green);
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: .02em;
+        }
+
+        /* Desktop: sidebar visible when logged in */
+        body.logged-in .side-nav { display: flex; }
+        body.logged-in main.container { margin-left: 240px; }
+
+        /* Tablet */
+        @media (max-width: 760px) {
+            .side-nav { width: 200px; }
+            body.logged-in main.container { margin-left: 200px; }
+        }
+
+        /* Móvil y tablet: sidebar off-canvas con toggle */
+        @media (max-width: 768px) {
+            .nav-toggle { display: flex; }
+
+            .side-nav {
+                position: fixed;
+                top: 0;
+                left: -280px;
+                width: 280px;
+                height: 100vh;
+                max-width: 85vw;
+                transition: left .3s cubic-bezier(.25,.8,.25,1);
+                display: flex;
+                border-right: none;
+                box-shadow: 8px 0 32px rgba(0,0,0,.3);
+                padding-top: 70px; /* espacio para el botón hamburguesa */
+            }
+
+            /* Menú abierto */
+            .side-nav.open {
+                left: 0;
+            }
+
+            /* Overlay visible cuando menú abierto */
+            .nav-overlay.visible {
+                display: block;
+                opacity: 1;
+            }
+
+            /* En móvil/tablet, el main nunca tiene margin-left */
+            body.logged-in main.container { margin-left: 0; }
+        }
+        :root {
+            --bg: #071018;
+            --bg-soft: #0b1620;
+            --card: rgba(17, 30, 42, .82);
+            --card-strong: #101e2a;
+            --green: #2e9e5b;
+            --green-strong: #247a46;
+            --green-soft: rgba(46, 158, 91, .12);
+            --text: #f5f8fa;
+            --muted: #a6b4bf;
+            --muted-2: #728391;
+            --border: rgba(154, 183, 201, .14);
+            --radius: 22px;
+            --max: 1180px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 82% 7%, rgba(72, 242, 139, .12), transparent 28%),
+                radial-gradient(circle at 8% 34%, rgba(35, 120, 93, .12), transparent 25%),
+                linear-gradient(180deg, #071018 0%, #08131d 45%, #071018 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .25;
+            background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, black, transparent 75%);
+        }
+
+        a { color: inherit; }
+        img { max-width: 100%; }
+        .container { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 0 20px;
+            border-radius: 14px;
+            border: 1px solid transparent;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--green); color: #07110c; box-shadow: 0 10px 30px rgba(46,158,91,.18); }
+        .btn-primary:hover { background: var(--green-strong); box-shadow: 0 14px 34px rgba(46,158,91,.25); }
+        .btn-outline { color: var(--text); border-color: rgba(173,195,207,.22); background: rgba(255,255,255,.025); }
+        .btn-outline:hover { border-color: rgba(46,158,91,.5); background: var(--green-soft); }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            min-height: 570px;
+            display: grid;
+            grid-template-columns: 1fr 1.05fr;
+            align-items: center;
+            gap: 58px;
+            padding: 72px 0 76px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 430px;
+            height: 430px;
+            right: -180px;
+            top: 40px;
+            background: rgba(71, 238, 135, .08);
+            filter: blur(70px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border: 1px solid rgba(46,158,91,.18);
+            border-radius: 999px;
+            color: var(--green);
+            background: var(--green-soft);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .brand-name {
+            color: var(--green);
+            font-size: clamp(24px, 3vw, 36px);
+            font-weight: 800;
+            letter-spacing: .02em;
+            margin-bottom: 8px;
+        }
+
+        .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
+
+        .hero h1 {
+            max-width: 620px;
+            font-size: clamp(42px, 5.2vw, 70px);
+            line-height: .99;
+            letter-spacing: -3.5px;
+            font-weight: 800;
+        }
+        .hero h1 span { color: var(--green); }
+        .hero-copy { max-width: 570px; color: var(--muted); font-size: 17px; margin: 24px 0 30px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+        .hero-visual {
+            position: relative;
+            height: 430px;
+        }
+        .hero-image {
+            position: absolute;
+            overflow: hidden;
+            border: 1px solid rgba(159, 220, 186, .3);
+            border-radius: 24px;
+            box-shadow: 0 28px 70px rgba(0,0,0,.35);
+            background: #14222e;
+        }
+        .hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .45s ease; }
+        .hero-image:hover img { transform: scale(1.045); }
+        .hero-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(3,8,12,.45)); }
+        .hero-image.one { width: 57%; height: 350px; left: 3%; top: 34px; transform: rotate(-2deg); }
+        .hero-image.two { width: 38%; height: 195px; right: 1%; top: 8px; transform: rotate(2deg); }
+        .hero-image.three { width: 38%; height: 190px; right: 4%; bottom: 5px; transform: rotate(-1deg); }
+        .image-label {
+            position: absolute;
+            left: 14px;
+            bottom: 14px;
+            z-index: 2;
+            padding: 7px 10px;
+            border-radius: 10px;
+            background: rgba(6,14,20,.7);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Sections */
+        .section { padding: 54px 0; }
+        .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 24px; }
+        .section-kicker { color: var(--green); text-transform: uppercase; letter-spacing: .16em; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
+        .section-title { font-size: clamp(28px, 3vw, 42px); line-height: 1.1; letter-spacing: -1.5px; }
+        .section-description { max-width: 560px; color: var(--muted); font-size: 14px; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .feature-card, .program-card, .challenge-card, .testimonial-card, .benefits-card, .contact-card {
+            border: 1px solid var(--border);
+            background: linear-gradient(145deg, rgba(18,32,44,.92), rgba(10,21,30,.82));
+            border-radius: var(--radius);
+            box-shadow: 0 16px 45px rgba(0,0,0,.13);
+        }
+        .feature-card { padding: 22px; min-height: 205px; transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+        .feature-card:hover, .program-card:hover, .challenge-card:hover { transform: translateY(-4px); border-color: rgba(46,158,91,.35); box-shadow: 0 20px 50px rgba(0,0,0,.22); }
+        .feature-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; background: var(--green-soft); color: var(--green); font-size: 22px; margin-bottom: 24px; }
+        .feature-card h3, .program-card h3 { font-size: 17px; margin-bottom: 8px; }
+        .feature-card p, .program-card p, .challenge-description, .testimonial-text, .benefits-item-desc { color: var(--muted); font-size: 13px; }
+
+        .programs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .program-card { padding: 26px; transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+        .program-icon { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 16px; background: rgba(46,158,91,.1); font-size: 25px; margin-bottom: 20px; }
+        .program-list { display: grid; gap: 9px; margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--border); }
+        .program-item { color: #c8d4dc; font-size: 12px; }
+        .program-item::first-letter { color: var(--green); }
+
+        .challenge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .challenge-card { padding: 25px; transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+        .challenge-top { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .challenge-title { font-size: 17px; font-weight: 700; }
+        .challenge-badge { color: var(--green); background: var(--green-soft); padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+        .challenge-button { margin-top: 20px; display: inline-flex; color: var(--green); text-decoration: none; font-size: 13px; font-weight: 700; }
+
+        .cards-grid { display: grid; gap: 18px; }
+        .activity-card {
+            border: 1px solid var(--border);
+            background: linear-gradient(145deg, rgba(18,32,44,.92), rgba(10,21,30,.82));
+            border-radius: var(--radius);
+            box-shadow: 0 16px 45px rgba(0,0,0,.13);
+            padding: 26px;
+            transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+        }
+        .activity-card:hover { transform: translateY(-4px); border-color: rgba(46,158,91,.35); box-shadow: 0 20px 50px rgba(0,0,0,.22); }
+        .activity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: var(--green-soft);
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .activity-badge span { color: var(--green); }
+        .activity-heading { font-size: 17px; font-weight: 700; margin-bottom: 12px; line-height: 1.18; }
+        .activity-subtitle { color: var(--muted); font-size: 13px; line-height: 1.75; margin-bottom: 18px; }
+        .activity-timer {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: var(--green-soft);
+            border: 1px solid rgba(46,158,91,.25);
+            color: var(--green);
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+        }
+        .activity-timer.visible { display: flex; }
+        .activity-timer .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ff4d4d;
+            animation: pulse-dot 1s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+        .activity-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(46,158,91,.22);
+            background: linear-gradient(180deg, var(--green-soft), rgba(46,158,91,.06));
+            color: var(--green);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            transition: transform .2s ease, background .2s ease;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .activity-cta:hover { transform: translateY(-1px); background: linear-gradient(180deg, rgba(46,158,91,.18), rgba(46,158,91,.08)); }
+        .activity-cta.stop {
+            border-color: rgba(255,77,77,0.35);
+            background: linear-gradient(180deg, rgba(255,77,77,0.16), rgba(255,77,77,0.06));
+            color: #ff8080;
+        }
+        .activity-cta.pending {
+            opacity: 0.7;
+            cursor: default;
+            pointer-events: none;
+            border-color: rgba(250,204,21,0.3);
+            background: rgba(250,204,21,0.08);
+            color: #facc15;
+        }
+        .activity-cta.done {
+            opacity: 0.55;
+            cursor: default;
+            pointer-events: none;
+            border-color: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+        }
+
+        .stats {
+            margin: 30px 0 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: rgba(16,30,42,.65);
+            overflow: hidden;
+        }
+        .stat { padding: 25px; text-align: center; border-right: 1px solid var(--border); }
+        .stat:last-child { border-right: 0; }
+        .stat-number { font-size: 30px; font-weight: 800; color: var(--green); letter-spacing: -1px; }
+        .stat-label { color: var(--muted-2); font-size: 12px; margin-top: 4px; }
+
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .testimonial-card { padding: 24px; }
+        .rating { color: #ffd166; letter-spacing: 2px; font-size: 12px; margin-bottom: 17px; }
+        .testimonial-text { font-style: italic; line-height: 1.75; margin-bottom: 20px; }
+        .testimonial-author { font-size: 13px; font-weight: 700; }
+        .testimonial-role { color: var(--muted-2); font-size: 11px; margin-top: 3px; }
+
+        .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .benefits-card { padding: 28px; }
+        .benefits-card h3 { font-size: 20px; margin-bottom: 20px; }
+        .benefits-list { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .benefits-item { display: flex; gap: 11px; align-items: flex-start; }
+        .benefits-icon { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 10px; background: var(--green-soft); }
+        .benefits-item-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+
+        .cta {
+            position: relative;
+            overflow: hidden;
+            margin: 54px 0;
+            padding: 58px 30px;
+            text-align: center;
+            border: 1px solid rgba(46,158,91,.2);
+            border-radius: 28px;
+            background: radial-gradient(circle at 50% 0%, rgba(46,158,91,.14), transparent 55%), linear-gradient(145deg, rgba(15,36,46,.95), rgba(9,22,31,.95));
+        }
+        .cta h2 { font-size: clamp(30px, 4vw, 48px); letter-spacing: -2px; line-height: 1.05; margin-bottom: 14px; }
+        .cta p { max-width: 620px; margin: 0 auto 25px; color: var(--muted); font-size: 14px; }
+        .cta-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+        .contact-card { padding: 28px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 30px; }
+        .contact-label { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 8px; }
+        .contact-title { font-size: 28px; letter-spacing: -1px; margin-bottom: 10px; }
+        .contact-copy { color: var(--muted); font-size: 13px; }
+        .contact-info { display: grid; gap: 15px; }
+        .contact-item { padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.02); }
+        .contact-item strong { display: block; font-size: 12px; margin-bottom: 4px; color: #d7e1e7; }
+        .contact-item span { color: var(--muted); font-size: 13px; }
+
+        footer { padding: 42px 0 20px; border-top: 1px solid var(--border); margin-top: 55px; }
+        .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 35px; }
+        .footer-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+        .footer-column h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 14px; }
+        .footer-column p, .footer-link { color: var(--muted-2); font-size: 12px; line-height: 1.7; }
+        .footer-links { display: grid; gap: 7px; }
+        .footer-link { text-decoration: none; transition: color .2s ease; }
+        .footer-link:hover { color: var(--green); }
+        .footer-bottom { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted-2); font-size: 11px; text-align: center; }
+
+        @media (max-width: 760px) {
+            .container { width: min(var(--max), calc(100% - 28px)); }
+            .hero { min-height: auto; padding: 48px 0 35px; }
+            .hero h1 { font-size: clamp(40px, 12vw, 58px); letter-spacing: -2.5px; }
+            .hero-copy { font-size: 15px; }
+            .hero-visual { height: 370px; }
+            .hero-image.one { width: 57%; height: 305px; }
+            .hero-image.two { width: 40%; height: 170px; }
+            .hero-image.three { width: 40%; height: 165px; }
+            .features-grid, .programs-grid, .testimonials-grid, .benefits-grid, .challenge-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .stat:nth-child(2) { border-right: 0; }
+            .stat:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+            .benefits-list { grid-template-columns: 1fr; }
+            .contact-card { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-grid .footer-column:first-child { grid-column: 1 / -1; }
+        }
+
+        @media (max-width: 480px) {
+            .container { width: min(var(--max), calc(100% - 22px)); }
+            .hero { grid-template-columns: 1fr; gap: 32px; padding: 48px 0 32px; min-height: auto; }
+            .hero-copy-block { order: 1; }
+            .hero-visual { order: 2; position: relative; height: auto; }
+            .hero-actions .btn { width: 100%; }
+            .hero-image { position: relative !important; width: 100% !important; height: auto !important; margin-bottom: 16px; transform: none !important; }
+            .hero-image img { border-radius: 16px; display: block; width: 100%; height: auto; }
+            .image-label { left: 12px; bottom: 12px; padding: 8px 12px; font-size: 13px; border-radius: 8px; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); }
+            .section { padding: 38px 0; }
+            .section-heading { display: block; }
+            .section-description { margin-top: 10px; }
+            .stats { margin-top: 20px; }
+            .stat { padding: 19px 8px; }
+            .stat-number { font-size: 25px; }
+            .challenge-top { align-items: flex-start; flex-direction: column; }
+            .cta { padding: 42px 18px; }
+            .cta-actions .btn { width: 100%; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-grid .footer-column:last-child { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón hamburguesa para móvil -->
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="side-nav">
+        <span class="hamburger"></span>
+    </button>
+
+    <!-- Overlay para cerrar el menú al hacer click fuera -->
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+
+    <nav class="side-nav" id="side-nav" aria-label="Navegación principal">
+        <div class="nav-brand">FIT<span style="color:var(--green)">WORK</span></div>
+        <a href="index.html" class="active">🏠 Inicio</a>
+        <a href="desafios.html">🎯 Desafíos</a>
+        <a href="ranking.html">🏆 Ranking</a>
+        <a href="panel.html">👤 Perfil</a>
+    </nav>
+    <main class="container">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-copy-block">
+                <div class="brand-name">FITWORK</div>
+                <div class="eyebrow"><span class="eyebrow-dot"></span> Tu progreso, nuestra meta</div>
+                <h1 id="hero-title">Entrena hoy,<br><span>mejora mañana.</span></h1>
+                <p class="hero-copy">FITWORK te ayuda a mantenerte activo mientras estudias. Encuentra rutinas, desafíos y herramientas para convertir pequeños momentos en progreso real.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="login.html">Iniciar sesión</a>
+                    <a class="btn btn-outline" href="registro.html">Registrarse</a>
+                </div>
+            </div>
+
+            <div class="hero-visual" aria-label="Galería de FITWORK">
+                <div class="hero-image one">
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1000&q=85" alt="Persona entrenando con pesas">
+                    <span class="image-label">Entrenamiento</span>
+                </div>
+                <div class="hero-image two">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=85" alt="Persona realizando ejercicio">
+                    <span class="image-label">Energía</span>
+                </div>
+                <div class="hero-image three">
+                    <img src="https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?auto=format&fit=crop&w=800&q=85" alt="Actividad física y bienestar">
+                    <span class="image-label">Bienestar</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="progreso" aria-labelledby="features-title">
+            <div class="section-heading">
+                <div>
+                    <div class="section-kicker">Todo en un solo lugar</div>
+                    <h2 class="section-title" id="features-title">Herramientas para mantenerte en movimiento</h2>
+                </div>
+                <p class="section-description">Una experiencia sencilla para organizar tus entrenamientos, mantener la motivación y visualizar tus avances.</p>
+            </div>
+            <div class="features-grid">
+                <article class="feature-card"><div class="feature-icon">🏋</div><h3>Rutinas personalizadas</h3><p>Planes adaptados a tus objetivos, nivel y tiempo disponible.</p></article>
+                <article class="feature-card"><div class="feature-icon">📈</div><h3>Seguimiento de progreso</h3><p>Visualiza tus avances y mantén una referencia clara de tu evolución.</p></article>
+                <article class="feature-card"><div class="feature-icon">⚡</div><h3>Más energía</h3><p>Convierte sesiones cortas en hábitos que acompañen tu día a día.</p></article>
+                <article class="feature-card"><div class="feature-icon">♥</div><h3>Vida más saludable</h3><p>Encuentra un equilibrio entre entrenamiento, estudio y bienestar.</p></article>
+            </div>
+
+            <div class="stats" aria-label="Estadísticas de la plataforma">
+                <div class="stat"><div class="stat-number">15+</div><div class="stat-label">minutos por rutina</div></div>
+                <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">acceso a la plataforma</div></div>
+                <div class="stat"><div class="stat-number">3</div><div class="stat-label">tipos de entrenamiento</div></div>
+                <div class="stat"><div class="stat-number">100%</div><div class="stat-label">enfocado en estudiantes</div></div>
+            </div>
+        </section>
+
+        <section class="section" id="programas" aria-labelledby="programs-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Entrenamientos</div><h2 class="section-title" id="programs-title">Elige cómo quieres entrenar</h2></div>
+                <p class="section-description">Programas fáciles de entender para distintos objetivos y momentos del día.</p>
+            </div>
+            <div class="programs-grid">
+                <article class="program-card"><div class="program-icon">💪</div><h3>Fuerza y resistencia</h3><p>Fortalece tu cuerpo con sesiones progresivas y prácticas.</p><div class="program-list"><div class="program-item">✓ 15–30 min por sesión</div><div class="program-item">✓ Sin equipamiento necesario</div><div class="program-item">✓ Progresión semanal</div></div></article>
+                <article class="program-card"><div class="program-icon">🧘</div><h3>Flexibilidad y yoga</h3><p>Sesiones para movilidad, estiramiento y recuperación.</p><div class="program-list"><div class="program-item">✓ 10–20 min por sesión</div><div class="program-item">✓ Relajación y movilidad</div><div class="program-item">✓ Ideal para pausas</div></div></article>
+                <article class="program-card"><div class="program-icon">🏃</div><h3>Cardio intenso</h3><p>Rutinas dinámicas para elevar tu ritmo y trabajar resistencia.</p><div class="program-list"><div class="program-item">✓ 20–40 min por sesión</div><div class="program-item">✓ Alta intensidad opcional</div><div class="program-item">✓ Aumenta tu energía</div></div></article>
+            </div>
+        </section>
+
+        <section class="section" id="desafios" aria-labelledby="challenges-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Desafíos</div><h2 class="section-title" id="challenges-title">Pequeños retos, grandes avances</h2></div>
+                <p class="section-description">Desafíos físicos pensados para que puedas convertir tu actividad en una experiencia más dinámica.</p>
+            </div>
+            <div class="cards-grid" id="cards-grid">
+                <article class="activity-card" data-id="futbol10" data-points="20">
+                    <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                    <h2 class="activity-heading">Clásico de Microfútbol en el Descanso</h2>
+                    <p class="activity-subtitle">Arma el partido con tus amigos en el patio. Jugar 10 minutos activa tus reflejos y suma tus primeros puntos.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="yoga_zen" data-points="20">
+                    <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                    <h2 class="activity-heading">Estiramiento y Yoga Zen</h2>
+                    <p class="activity-subtitle">Relaja tus hombros y espalda usando las colchonetas del gimnasio. Ideal para liberar el estrés entre clases.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="pingpong" data-points="20">
+                    <div class="activity-badge">🟢 <span>Dificultad Baja</span> • +20 PTS</div>
+                    <h2 class="activity-heading">Torneo Relámpago de Ping-Pong</h2>
+                    <p class="activity-subtitle">Juega una partida rápida en las mesas del colegio. Activa tu concentración y coordinación mano-ojo.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="trote10" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Trote de Resistencia Base</h2>
+                    <p class="activity-subtitle">Completa 10 vueltas seguidas a ritmo constante alrededor de la cancha principal para mejorar tu capacidad cardiovascular.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="baile" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Reto de Ritmo y Coreografía</h2>
+                    <p class="activity-subtitle">Sigue una rutina corta de baile o aeróbicos grupales en el patio durante las jornadas recreativas del proyecto.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="cuerda3" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Minuto de Fuego con Cuerda</h2>
+                    <p class="activity-subtitle">Consigue una cuerda en el área de deportes y realiza 3 series de 1 minuto continuo de saltos veloces.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="abs3" data-points="50">
+                    <div class="activity-badge">🟡 <span>Dificultad Media</span> • +50 PTS</div>
+                    <h2 class="activity-heading">Fuerza Abdominal en Colchoneta</h2>
+                    <p class="activity-subtitle">Completa una rutina concentrada de 3 series de 20 abdominales cortas en la zona de entrenamiento.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="vueltas20" data-points="100">
+                    <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                    <h2 class="activity-heading">El Reto Reina: 20 Vueltas a la Cancha</h2>
+                    <p class="activity-subtitle">Pon a prueba tu resistencia máxima dando 20 vueltas completas a la cancha grande de fútbol del colegio.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="barras" data-points="100">
+                    <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                    <h2 class="activity-heading">Calistenia Estricta en Barras</h2>
+                    <p class="activity-subtitle">Rutina de fuerza pura: Ejecuta 3 series de 8 dominadas o colgadas controladas en las barras del gimnasio.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+
+                <article class="activity-card" data-id="burpees" data-points="100">
+                    <div class="activity-badge">🔴 <span>Dificultad Alta</span> • +100 PTS</div>
+                    <h2 class="activity-heading">Potencia Total con Burpees</h2>
+                    <p class="activity-subtitle">Completa 3 series intensas de 12 burpees seguidos (flexión, sentadilla y salto) en el menor tiempo posible.</p>
+                    <div class="activity-timer"><span class="dot"></span><span class="timer-text">00:00</span></div>
+                    <a href="#" class="activity-cta">Iniciar Reto</a>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" id="como-funciona" aria-labelledby="how-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Paso a paso</div><h2 class="section-title" id="how-title">¿Cómo funciona?</h2></div>
+                <p class="section-description">Empieza en pocos pasos y utiliza FITWORK a tu ritmo.</p>
+            </div>
+            <div class="features-grid">
+                <article class="feature-card"><div class="feature-icon">01</div><h3>Crea tu cuenta</h3><p>Regístrate y configura la información básica para comenzar.</p></article>
+                <article class="feature-card"><div class="feature-icon">02</div><h3>Elige tu plan</h3><p>Selecciona el tipo de entrenamiento que más se adapta a ti.</p></article>
+                <article class="feature-card"><div class="feature-icon">03</div><h3>Entrena</h3><p>Completa tus sesiones y desafíos desde cualquier dispositivo.</p></article>
+                <article class="feature-card"><div class="feature-icon">04</div><h3>Mide tu progreso</h3><p>Consulta tus avances y continúa construyendo tu hábito.</p></article>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="testimonials-title">
+            <div class="section-heading">
+                <div><div class="section-kicker">Comunidad</div><h2 class="section-title" id="testimonials-title">Experiencias de estudiantes</h2></div>
+            </div>
+            <div class="testimonials-grid">
+                <article class="testimonial-card"><div class="rating">★★★★★</div><p class="testimonial-text">“Ahora puedo hacer una rutina corta entre clases sin sentir que tengo que organizar todo el día alrededor del ejercicio.”</p><div class="testimonial-author">María Rodríguez</div><div class="testimonial-role">Estudiante de Ingeniería</div></article>
+                <article class="testimonial-card"><div class="rating">★★★★★</div><p class="testimonial-text">“Los desafíos hacen que entrenar sea más dinámico y me ayudan a mantener una rutina.”</p><div class="testimonial-author">Carlos Méndez</div><div class="testimonial-role">Estudiante de Administración</div></article>
+                <article class="testimonial-card"><div class="rating">★★★★★</div><p class="testimonial-text">“Me gusta poder ver mis avances y tener sesiones que se ajustan al tiempo que tengo disponible.”</p><div class="testimonial-author">Sofía González</div><div class="testimonial-role">Estudiante de Medicina</div></article>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="benefits-title">
+            <div class="benefits-grid">
+                <article class="benefits-card">
+                    <h3 id="benefits-title">✨ Beneficios para tu bienestar</h3>
+                    <div class="benefits-list">
+                        <div class="benefits-item"><div class="benefits-icon">💚</div><div><div class="benefits-item-title">Actividad cardiovascular</div><div class="benefits-item-desc">Integra movimiento a tu rutina.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">🧠</div><div><div class="benefits-item-title">Concentración</div><div class="benefits-item-desc">Incluye pausas activas durante el estudio.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">⚡</div><div><div class="benefits-item-title">Energía</div><div class="benefits-item-desc">Mantente activo con sesiones breves.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">😌</div><div><div class="benefits-item-title">Desconexión</div><div class="benefits-item-desc">Haz una pausa de tus actividades académicas.</div></div></div>
+                    </div>
+                </article>
+                <article class="benefits-card">
+                    <h3>🚀 ¿Por qué FITWORK?</h3>
+                    <div class="benefits-list">
+                        <div class="benefits-item"><div class="benefits-icon">🎯</div><div><div class="benefits-item-title">Pensado para estudiantes</div><div class="benefits-item-desc">Rutinas que consideran el tiempo disponible.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">📱</div><div><div class="benefits-item-title">Acceso desde cualquier dispositivo</div><div class="benefits-item-desc">Consulta la plataforma donde la necesites.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">🤝</div><div><div class="benefits-item-title">Comunidad</div><div class="benefits-item-desc">Comparte la experiencia con otros estudiantes.</div></div></div>
+                        <div class="benefits-item"><div class="benefits-icon">📊</div><div><div class="benefits-item-title">Seguimiento</div><div class="benefits-item-desc">Mantén una referencia de tus avances.</div></div></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="cta" aria-labelledby="cta-title">
+            <div class="section-kicker">Empieza hoy</div>
+            <h2 id="cta-title">Tu próximo entrenamiento comienza aquí.</h2>
+            <p>Construye una rutina que se adapte a tu vida de estudiante y avanza paso a paso con FITWORK.</p>
+            <div class="cta-actions"><a class="btn btn-primary" href="registro.html">Registrarme ahora</a><a class="btn btn-outline" href="login.html">Ya tengo cuenta</a></div>
+        </section>
+
+        <section class="section" id="contacto" aria-labelledby="contact-title">
+            <div class="contact-card">
+                <div>
+                    <div class="contact-label">Equipo de desarrollo</div>
+                    <h2 class="contact-title" id="contact-title">Sofía, Jerónimo y Brayan</h2>
+                    <p class="contact-copy">FITWORK es una propuesta enfocada en facilitar la actividad física dentro de la rutina estudiantil.</p>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item"><strong>Contacto institucional</strong><span>ruasofia@iemab.edu.co</span></div>
+                    <div class="contact-item"><strong>Redes sociales</strong><span>Instagram · TikTok</span></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column"><div class="footer-title">FIT<span style="color:var(--green)">WORK</span></div><p>La plataforma de fitness diseñada para estudiantes que quieren integrar movimiento, entrenamiento y bienestar a su rutina.</p></div>
+                <div class="footer-column"><h4>Programa</h4><div class="footer-links"><a class="footer-link" href="#programas">Entrenamientos</a><a class="footer-link" href="desafios.html">Desafíos</a><a class="footer-link" href="#progreso">Progreso</a></div></div>
+                <div class="footer-column"><h4>Cuenta</h4><div class="footer-links"><a class="footer-link" href="login.html">Iniciar sesión</a><a class="footer-link" href="registro.html">Crear cuenta</a><a class="footer-link" href="panel.html">Panel</a></div></div>
+                <div class="footer-column"><h4>Comunidad</h4><div class="footer-links"><a class="footer-link" href="desafios.html">Desafíos</a><a class="footer-link" href="#contacto">Contacto</a><a class="footer-link" href="#como-funciona">Cómo funciona</a></div></div>
+            </div>
+            <div class="footer-bottom">© 2026 FITWORK. Todos los derechos reservados.</div>
+        </div>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = "https://crjtcercspirgzzmzeax.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_ULR8jNd9FD7W4Khudk0ebw_kCp_R4fM";
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUser = null;
+        const timers = {};
+
+        const CHALLENGE_TITLES = {
+            futbol10: "Clásico de Microfútbol en el Descanso",
+            yoga_zen: "Estiramiento y Yoga Zen",
+            pingpong: "Torneo Relámpago de Ping-Pong",
+            trote10: "Trote de Resistencia Base",
+            baile: "Reto de Ritmo y Coreografía",
+            cuerda3: "Minuto de Fuego con Cuerda",
+            abs3: "Fuerza Abdominal en Colchoneta",
+            vueltas20: "El Reto Reina: 20 Vueltas a la Cancha",
+            barras: "Calistenia Estricta en Barras",
+            burpees: "Potencia Total con Burpees"
+        };
+
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+            const s = (totalSeconds % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
+        }
+
+        async function ensureSession() {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            if (error || !user) {
+                return null;
+            }
+            return user;
+        }
+
+        async function loadHero(user) {
+            document.body.classList.add('logged-in');
+            const { data, error } = await supabaseClient
+                .from("usuario")
+                .select("nombre, puntos, rol (nombre)")
+                .eq("auth_id", user.id)
+                .maybeSingle();
+
+            console.log('loadHero profile:', data, 'error:', error);
+
+            const nombre = data?.nombre || user.email || "Usuario";
+            const puntos = data?.puntos ?? 0;
+            const rolNombre = data?.rol?.nombre || "";
+            const isAdmin = ["Administrador", "Admin", "admin", "administrador"].includes(rolNombre);
+
+            console.log('isAdmin:', isAdmin, 'rol:', data?.rol);
+
+            // Visual debug banner
+            const debugBanner = document.createElement('div');
+            debugBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:' + (isAdmin ? '#247a46' : '#ef4444') + ';color:white;padding:8px;text-align:center;z-index:9999;font-size:12px;font-family:monospace;';
+            debugBanner.textContent = `DEBUG: usuario="${nombre}" | rol="${rolNombre}" | isAdmin=${isAdmin} | auth_id=${user.id}`;
+            document.body.prepend(debugBanner);
+
+            // Update hero greeting
+            const heroTitle = document.getElementById("hero-title");
+            const heroCopy = document.querySelector(".hero-copy");
+            if (heroTitle && heroCopy) {
+                heroTitle.innerHTML = `¡Hola, ${nombre}!<br><span>Entrena hoy, mejora mañana.</span>`;
+                heroCopy.textContent = `Bienvenido de nuevo, ${nombre}. Tienes ${puntos} puntos en el ranking.`;
+            }
+
+            // Update hero actions to show profile instead of login/register
+            const heroActions = document.querySelector(".hero-actions");
+            if (heroActions) {
+                heroActions.innerHTML = `
+                    <a class="btn btn-primary" href="panel.html">Mi Panel</a>
+                    <a class="btn btn-outline" href="desafios.html">Ver Desafíos</a>
+                `;
+            }
+
+            // Add admin links to side nav if user is admin
+            if (isAdmin) {
+                const sideNav = document.getElementById("side-nav");
+                console.log('sideNav element:', sideNav);
+                if (sideNav) {
+                    const adminLinks = `
+                        <a href="aprobaciones.html">✅ Aprobaciones</a>
+                        <a href="ranking.html">🏆 Ranking Admin</a>
+                    `;
+                    sideNav.insertAdjacentHTML('beforeend', adminLinks);
+                    console.log('Admin links added to side nav');
+                    debugBanner.textContent += ' | ✓ Links added';
+                } else {
+                    console.error('side-nav element not found!');
+                    debugBanner.textContent += ' | ✗ side-nav NOT FOUND';
+                }
+            } else {
+                debugBanner.textContent += ' | ✗ Not admin';
+            }
+
+            const { data: rows } = await supabaseClient
+                .from("usuario")
+                .select("auth_id, puntos")
+                .order("puntos", { ascending: false });
+
+            // Could add rank display somewhere if needed
+        }
+
+        async function applySolicitudStates() {
+            if (!currentUser) return;
+            const { data: solicitudes } = await supabaseClient
+                .from("solicitud_reto")
+                .select("challenge_id, estado")
+                .eq("auth_id", currentUser.id);
+
+            if (!solicitudes) return;
+
+            const estadoPorReto = {};
+            solicitudes.forEach(s => {
+                const actual = estadoPorReto[s.challenge_id];
+                if (!actual || s.estado === "aprobado" || (s.estado === "pendiente" && actual !== "aprobado")) {
+                    estadoPorReto[s.challenge_id] = s.estado;
+                }
+            });
+
+            document.querySelectorAll(".activity-card").forEach(card => {
+                const id = card.dataset.id;
+                const estado = estadoPorReto[id];
+                const btn = card.querySelector(".activity-cta");
+
+                if (estado === "aprobado") {
+                    btn.classList.add("done");
+                    btn.textContent = "✓ Puntos aprobados";
+                } else if (estado === "pendiente") {
+                    btn.classList.add("pending");
+                    btn.textContent = "⏳ Esperando aprobación del profesor";
+                }
+            });
+        }
+
+        function startTimer(card) {
+            const id = card.dataset.id;
+            const btn = card.querySelector(".activity-cta");
+            const timerBox = card.querySelector(".activity-timer");
+            const timerText = card.querySelector(".timer-text");
+
+            timers[id] = { seconds: 0 };
+            timerBox.classList.add("visible");
+            btn.textContent = "Finalizar Reto (00:00)";
+            btn.classList.add("stop");
+
+            timers[id].intervalId = setInterval(() => {
+                timers[id].seconds += 1;
+                const formatted = formatTime(timers[id].seconds);
+                timerText.textContent = formatted;
+                btn.textContent = `Finalizar Reto (${formatted})`;
+            }, 1000);
+        }
+
+        async function stopTimerAndSubmit(card) {
+            const id = card.dataset.id;
+            const points = Number(card.dataset.points);
+            const title = CHALLENGE_TITLES[id];
+            const btn = card.querySelector(".activity-cta");
+
+            clearInterval(timers[id].intervalId);
+            const seconds = timers[id].seconds;
+            delete timers[id];
+
+            btn.classList.remove("stop");
+            btn.textContent = "Guardando...";
+
+            const { error } = await supabaseClient.from("solicitud_reto").insert({
+                auth_id: currentUser.id,
+                challenge_id: id,
+                titulo: title,
+                puntos: points,
+                tiempo_segundos: seconds,
+                estado: "pendiente"
+            });
+
+            if (error) {
+                btn.classList.add("stop");
+                btn.textContent = `Finalizar Reto (${formatTime(seconds)})`;
+                Swal.fire("Error", "No se pudo enviar el reto. Intenta de nuevo.", "error");
+                return;
+            }
+
+            btn.classList.add("pending");
+            btn.textContent = "⏳ Esperando aprobación del profesor";
+            Swal.fire({
+                title: "¡Reto enviado!",
+                text: `Avísale a tu profesor para que confirme en persona y apruebe tus ${points} puntos.`,
+                icon: "success"
+            });
+        }
+
+        function handleClick(card) {
+            const id = card.dataset.id;
+            const btn = card.querySelector(".activity-cta");
+
+            if (btn.classList.contains("pending") || btn.classList.contains("done")) return;
+
+            if (timers[id]) {
+                stopTimerAndSubmit(card);
+            } else {
+                startTimer(card);
+            }
+        }
+
+        window.addEventListener("load", async () => {
+            currentUser = await ensureSession();
+            if (currentUser) {
+                await loadHero(currentUser);
+                await applySolicitudStates();
+            }
+
+            document.querySelectorAll(".activity-card").forEach(card => {
+                const btn = card.querySelector(".activity-cta");
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (!currentUser) {
+                        Swal.fire("Inicia sesión", "Debes iniciar sesión para participar en los retos.", "warning").then(() => {
+                            window.location.href = "login.html";
+                        });
+                        return;
+                    }
+                    handleClick(card);
+                });
+            });
+
+            // --- Mobile Navigation Toggle ---
+            const navToggle = document.getElementById("nav-toggle");
+            const sideNav = document.getElementById("side-nav");
+            const navOverlay = document.getElementById("nav-overlay");
+
+            if (navToggle && sideNav && navOverlay) {
+                function openNav() {
+                    sideNav.classList.add("open");
+                    navOverlay.classList.add("visible");
+                    navToggle.setAttribute("aria-expanded", "true");
+                    navToggle.setAttribute("aria-label", "Cerrar menú");
+                    document.body.style.overflow = "hidden"; // Evitar scroll del body
+                }
+
+                function closeNav() {
+                    sideNav.classList.remove("open");
+                    navOverlay.classList.remove("visible");
+                    navToggle.setAttribute("aria-expanded", "false");
+                    navToggle.setAttribute("aria-label", "Abrir menú");
+                    document.body.style.overflow = "";
+                }
+
+                function toggleNav() {
+                    if (sideNav.classList.contains("open")) {
+                        closeNav();
+                    } else {
+                        openNav();
+                    }
+                }
+
+                navToggle.addEventListener("click", toggleNav);
+                navOverlay.addEventListener("click", closeNav);
+
+                // Cerrar menú al hacer click en un enlace (en móvil/tablet)
+                sideNav.querySelectorAll("a").forEach(link => {
+                    link.addEventListener("click", () => {
+                        if (window.innerWidth <= 768) {
+                            closeNav();
+                        }
+                    });
+                });
+
+                // Cerrar menú con tecla Escape
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape" && sideNav.classList.contains("open")) {
+                        closeNav();
+                    }
+                });
+
+                // Ajustar al redimensionar ventana
+                window.addEventListener("resize", () => {
+                    if (window.innerWidth > 768 && sideNav.classList.contains("open")) {
+                        closeNav();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

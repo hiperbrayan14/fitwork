@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Aprobaciones</title>
+    <link rel="stylesheet" href="./dist/styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <style>
+        :root {
+            --bg-body: #0d0d0d;
+            --panel: #121212;
+            --panel-soft: rgba(255,255,255,0.04);
+            --accent: #2e9e5b;
+            --text: #ffffff;
+            --muted: #9a9a9a;
+            --border: rgba(255,255,255,0.08);
+            --radius: 18px;
+            --shadow: 0 24px 80px rgba(0,0,0,0.45);
+        }
+        body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:var(--bg-body); color:var(--text); }
+        .bg-gray-100 { background:var(--bg-body); }
+        .p-6 { padding: 1.5rem; }
+        .max-w-6xl { max-width: 72rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .mb-8 { margin-bottom: 2rem; }
+        .bg-white { background:var(--panel); }
+        .rounded-2xl { border-radius: var(--radius); }
+        .shadow-sm { box-shadow: var(--shadow); }
+        .border-l-8 { border-left-width: 8px; }
+        .border-indigo-600 { border-color: var(--accent); }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; font-weight: 800; }
+        .font-extrabold { font-weight: 800; }
+        .text-gray-800 { color: var(--text); }
+        .tracking-tight { letter-spacing: -0.025em; }
+        .text-indigo-600 { color: var(--accent); }
+        .font-semibold { font-weight: 600; }
+        .mt-1 { margin-top: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .w-2 { width: 0.5rem; }
+        .h-2 { height: 0.5rem; }
+        .rounded-full { border-radius: 9999px; }
+        .bg-green-500 { background-color: var(--accent); }
+        .bg-red-50 { background-color: rgba(255,77,77,0.1); }
+        .hover\:bg-red-500:hover { background-color: #ff4d4d; color:#0d0d0d; }
+        .text-red-600 { color: #ff4d4d; }
+        .border { border-width: 1px; border-style: solid; }
+        .border-red-200 { border-color: rgba(255,77,77,0.3); }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .transition-all { transition: all 0.2s ease; }
+        .duration-300 { transition-duration: 300ms; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .card { background:#111111; border:1px solid var(--border); border-radius:1rem; box-shadow:var(--shadow); padding:20px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+        .pill { display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700; }
+        .pill-yellow { background:rgba(250,204,21,0.15); color:#facc15; }
+        .pill-green { background:rgba(46,158,91,0.15); color:var(--accent); }
+        .pill-red { background:rgba(255,77,77,0.15); color:#ff4d4d; }
+        .btn { padding:10px 18px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-size:14px; }
+        .btn-approve { background:var(--accent); color:#0d0d0d; }
+        .btn-approve:hover { background:#247a46; }
+        .btn-reject { background:rgba(255,77,77,0.15); color:#ff4d4d; }
+        .btn-reject:hover { background:rgba(255,77,77,0.3); }
+        .empty { text-align:center; padding:40px 20px; color:var(--muted); }
+        .muted { color:var(--muted); font-size:13px; }
+        .tabs { display:flex; gap:8px; margin-bottom:20px; }
+        .tab { padding:8px 16px; border-radius:999px; font-weight:700; font-size:13px; cursor:pointer; background:var(--panel-soft); color:var(--muted); border:1px solid var(--border); }
+        .tab.active { background:var(--accent); color:#0d0d0d; border-color:var(--accent); }
+        .btn-secondary { background:rgba(255,255,255,0.06); color:var(--accent); border:1px solid var(--border); text-decoration:none; display:inline-flex; align-items:center; }
+        .btn-secondary:hover { background:var(--panel-soft); border-color:var(--accent); }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100">
+<div class="p-6 max-w-6xl mx-auto">
+
+    <div class="bg-white rounded-2xl shadow-sm border-l-8 border-indigo-600 p-6 mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Aprobaciones de Retos</h1>
+            <p id="user-greeting" class="text-indigo-600 font-semibold mt-1 flex items-center gap-2">Cargando...</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="estadisticas.html" class="btn btn-secondary">📊 Estadísticas</a>
+            <a href="usuarios.html" class="btn btn-secondary">👥 Usuarios</a>
+            <button onclick="cerrarSesion()" class="btn btn-reject">Cerrar sesión</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" data-estado="pendiente" onclick="cambiarTab('pendiente', this)">Pendientes</button>
+        <button class="tab" data-estado="aprobado" onclick="cambiarTab('aprobado', this)">Aprobados</button>
+        <button class="tab" data-estado="rechazado" onclick="cambiarTab('rechazado', this)">Rechazados</button>
+    </div>
+
+    <div id="lista" class="space-y-4">
+        <div class="empty">Cargando solicitudes...</div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://crjtcercspirgzzmzeax.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ULR8jNd9FD7W4Khudk0ebw_kCp_R4fM";
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let tabActual = "pendiente";
+
+    function formatTime(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+        const s = (totalSeconds % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    }
+
+    async function checkAuth() {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) {
+            window.location.href = "login.html";
+            return false;
+        }
+
+        const { data: profile } = await supabaseClient
+            .from("usuario")
+            .select("nombre, rol (nombre)")
+            .eq("auth_id", user.id)
+            .single();
+
+        if (!profile || profile.rol?.nombre !== "Administrador") {
+            await Swal.fire({
+                title: "Acceso restringido",
+                text: "Esta sección es solo para administradores.",
+                icon: "warning"
+            });
+            window.location.href = "panel.html";
+            return false;
+        }
+
+        document.getElementById("user-greeting").innerHTML = `
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            Hola, <span class="text-gray-900 font-bold">${profile.nombre}</span>
+        `;
+        return true;
+    }
+
+    async function cargarSolicitudes() {
+        const lista = document.getElementById("lista");
+        lista.innerHTML = '<div class="empty">Cargando solicitudes...</div>';
+
+        const { data, error } = await supabaseClient
+            .from("solicitud_reto")
+            .select("id, auth_id, titulo, puntos, tiempo_segundos, estado, creado_at, video_url")
+            .eq("estado", tabActual)
+            .order("creado_at", { ascending: tabActual === "pendiente" });
+
+        if (error || !data || !data.length) {
+            lista.innerHTML = `<div class="empty">No hay solicitudes ${tabActual === "pendiente" ? "pendientes" : tabActual === "aprobado" ? "aprobadas" : "rechazadas"} por ahora.</div>`;
+            return;
+        }
+
+        // Traemos los nombres de los estudiantes por separado
+        const authIds = [...new Set(data.map(s => s.auth_id))];
+        const { data: perfiles } = await supabaseClient
+            .from("usuario")
+            .select("auth_id, nombre, email")
+            .in("auth_id", authIds);
+
+        const nombrePorAuthId = {};
+        (perfiles || []).forEach(p => { nombrePorAuthId[p.auth_id] = p.nombre || p.email; });
+
+        lista.innerHTML = data.map(sol => {
+            const nombre = nombrePorAuthId[sol.auth_id] || "Estudiante";
+            const fecha = new Date(sol.creado_at).toLocaleString("es-CO", { dateStyle: "short", timeStyle: "short" });
+            const pillClass = sol.estado === "pendiente" ? "pill-yellow" : sol.estado === "aprobado" ? "pill-green" : "pill-red";
+
+            const acciones = sol.estado === "pendiente" ? `
+                <button class="btn btn-approve" onclick="resolver(${sol.id}, 'aprobado')">✓ Aprobar</button>
+                <button class="btn btn-reject" onclick="resolver(${sol.id}, 'rechazado')">✕ Rechazar</button>
+            ` : "";
+
+            // Determinar si video_url es una ruta (path) o URL completa (compatibilidad)
+            const tieneVideo = !!sol.video_url;
+            const esPath = tieneVideo && !sol.video_url.startsWith("http");  // path: "user-id/archivo.mp4"
+            const esUrlCompleta = tieneVideo && sol.video_url.startsWith("http"); // legado
+
+            const videoBtn = tieneVideo
+                ? `<button class="btn" style="background:rgba(46,158,91,0.12); color:var(--accent); border:1px solid rgba(46,158,91,0.3);" onclick="verVideo('${sol.video_url}', ${esPath})">▶ Ver video</button>`
+                : `<span class="muted" style="font-style:italic;">Sin video</span>`;
+
+            return `
+                <div class="card">
+                    <div>
+                        <div style="font-weight:800; font-size:16px; color:var(--text);">${nombre}</div>
+                        <div class="muted">${sol.titulo} • +${sol.puntos} pts • tardó ${formatTime(sol.tiempo_segundos)}</div>
+                        <div class="muted">${fecha}</div>
+                        <div style="margin-top:8px;">${videoBtn}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="pill ${pillClass}">${sol.estado}</span>
+                        ${acciones}
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    async function resolver(id, nuevoEstado) {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+
+        // Obtenemos la solicitud completa
+        const { data: solicitud, error: solError } = await supabaseClient
+            .from("solicitud_reto")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+        if (solError || !solicitud) {
+            Swal.fire("Error", "No se pudo cargar la solicitud.", "error");
+            return;
+        }
+
+        if (nuevoEstado === "aprobado") {
+            const { data: perfil, error: perfilError } = await supabaseClient
+                .from("usuario")
+                .select("id, puntos, retos_completados, progreso")
+                .eq("auth_id", solicitud.auth_id)
+                .single();
+
+            if (perfilError || !perfil) {
+                Swal.fire("Error", "No se encontró el perfil del estudiante.", "error");
+                return;
+            }
+
+            const completados = Array.isArray(perfil.retos_completados) ? perfil.retos_completados : [];
+            if (!completados.includes(solicitud.titulo)) {
+                const { error: updateError } = await supabaseClient
+                    .from("usuario")
+                    .update({
+                        puntos: (perfil.puntos || 0) + solicitud.puntos,
+                        retos_completados: [...completados, solicitud.titulo],
+                        progreso: Math.min(100, (perfil.progreso || 0) + Math.round(solicitud.puntos / 10))
+                    })
+                    .eq("id", perfil.id);
+
+                if (updateError) {
+                    Swal.fire("Error", "No se pudieron otorgar los puntos.", "error");
+                    return;
+                }
+            }
+        }
+
+        const { error: solicitudUpdateError } = await supabaseClient
+            .from("solicitud_reto")
+            .update({
+                estado: nuevoEstado,
+                resuelto_por: user.id,
+                resuelto_at: new Date().toISOString()
+            })
+            .eq("id", id);
+
+        if (solicitudUpdateError) {
+            Swal.fire("Error", "No se pudo actualizar la solicitud.", "error");
+            return;
+        }
+
+        Swal.fire({
+            title: nuevoEstado === "aprobado" ? "¡Puntos otorgados!" : "Solicitud rechazada",
+            icon: nuevoEstado === "aprobado" ? "success" : "info",
+            timer: 1200,
+            showConfirmButton: false
+        });
+
+        cargarSolicitudes();
+    }
+
+    async function verVideo(videoUrlOrPath, esPath = true) {
+        let videoUrl = videoUrlOrPath;
+
+        // Si es una ruta (path), generamos URL firmada temporal (válida 5 min = 300 seg)
+        if (esPath) {
+            Swal.fire({
+                title: "Cargando video...",
+                text: "Generando enlace seguro temporal",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const { data, error } = await supabaseClient
+                .storage.from("evidencias-retos")
+                .createSignedUrl(videoUrlOrPath, 300); // 5 minutos
+
+            if (error || !data?.signedUrl) {
+                Swal.fire("Error", "No se pudo generar el enlace al video. ¿El bucket es privado y tienes rol de admin?", "error");
+                return;
+            }
+            videoUrl = data.signedUrl;
+        }
+        // Si es URL completa (http...), la usamos tal cual (compatibilidad con videos antiguos)
+
+        Swal.fire({
+            title: "Video de evidencia",
+            html: `<video src="${videoUrl}" controls autoplay style="width:100%; border-radius:12px; max-height:70vh;"></video>`,
+            width: 640,
+            showConfirmButton: true,
+            confirmButtonText: "Cerrar"
+        });
+    }
+
+    function cambiarTab(estado, btn) {
+        tabActual = estado;
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        btn.classList.add("active");
+        cargarSolicitudes();
+    }
+
+    async function cerrarSesion() {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+    }
+
+    window.onload = async () => {
+        const esAdmin = await checkAuth();
+        if (!esAdmin) return;
+        cargarSolicitudes();
+    };
+</script>
+<script src="nav.js"></script>
+<nav class="bottom-nav" id="bottom-nav">
+    <a href="index.html">🏠 Inicio</a>
+    <a href="desafios.html">🎯 Desafíos</a>
+    <a href="ranking.html">🏆 Ranking</a>
+    <a href="panel.html">👤 Perfil</a>
+    <a href="aprobaciones.html" class="active">✅ Aprobaciones</a>
+    <a href="usuarios.html">👥 Usuarios</a>
+</nav>
+</body>
+</html>
